@@ -1,0 +1,33 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Sprava_Vyrobku_a_Dilu.Database.Models
+{
+    public class DilModel
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int DilId { get; set; }
+        [Required]
+        public string Nazev { get; set; }
+        public string? Popis { get; set; }
+        [Required]
+        public decimal Cena { get; set; }
+        public DateTime Zalozeno { get; init; } = DateTime.UtcNow;
+        public DateTime? Upraveno { get; set; }
+        [Required]
+        public int VyrobekId { get; set; }
+        [ForeignKey(nameof(VyrobekId))]
+        public VyrobekModel Vyrobek { get; set; } = null!;
+
+        public DilModel(string nazev, decimal cena, int vyrobekId)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(nameof(nazev));
+            ArgumentNullException.ThrowIfNull(nameof(cena));
+            ArgumentNullException.ThrowIfNull(nameof(vyrobekId));
+            Nazev = nazev;
+            Cena = cena;
+            VyrobekId = vyrobekId;
+        }
+    }
+}

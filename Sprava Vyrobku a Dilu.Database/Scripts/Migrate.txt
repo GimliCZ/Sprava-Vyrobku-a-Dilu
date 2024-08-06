@@ -1,0 +1,7 @@
+dotnet tool install --global dotnet-ef
+
+dotnet ef migrations add InitialCreate --project "Sprava Vyrobku a Dilu.Sprava Vyrobku a Dilu.csproj"
+
+dotnet ef migrations add PrecisionFix --project "Sprava Vyrobku a Dilu.Database\Sprava Vyrobku a Dilu.Database.csproj" --output-dir "Migrations"
+
+dotnet ef database update --project "Sprava Vyrobku a Dilu.Database\Sprava Vyrobku a Dilu.Database.csproj"
