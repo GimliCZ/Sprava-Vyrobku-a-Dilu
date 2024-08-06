@@ -89,7 +89,7 @@
                             CanUserResizeColumns="True"
                             HorizontalScrollBarVisibility="Auto"
                             VerticalScrollBarVisibility="Auto"
-                            ItemsSource="{Binding ObservableDataModel.Vyrobky}">
+                            ItemsSource="{Binding ObservableDataModel.ViewableVyrobky}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Název" Binding="{Binding Nazev}" SortMemberPath="Nazev" MinWidth="40" Width="*" />
                                 <DataGridTextColumn Header="Cena" Binding="{Binding Cena}" SortMemberPath="Cena" MinWidth="40" Width="*"/>

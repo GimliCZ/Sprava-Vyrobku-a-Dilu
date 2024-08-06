@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sprava_Vyrobku_a_Dilu.Models
 {
-    public class VyrobekModel
+    public class VyrobekViewableModel
     {
         public int VyrobekId { get; set; }
         public string Nazev { get; set; }

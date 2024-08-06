@@ -17,6 +17,8 @@ namespace Sprava_Vyrobku_a_Dilu.Models
     {
         private readonly IDbService _dbService;
         private readonly IMapper _mapper;
+
+        public ObservableCollection<VyrobekViewableModel> ViewableVyrobky { get; set; }
         public ObservableCollection<VyrobekModel> Vyrobky { get; set; }
         public ObservableCollection<DilModel> Dily { get; set; }
 
@@ -29,6 +31,7 @@ namespace Sprava_Vyrobku_a_Dilu.Models
 
             Vyrobky = new ObservableCollection<VyrobekModel>();
             Dily = new ObservableCollection<DilModel>();
+            ViewableVyrobky = new ObservableCollection<VyrobekViewableModel>();
 
             // Subscribe to CollectionChanged events
             Vyrobky.CollectionChanged += OnVyrobkyChanged;
@@ -40,43 +43,65 @@ namespace Sprava_Vyrobku_a_Dilu.Models
             return Vyrobky.Any(v => v.Nazev.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
+        public async Task Create(VyrobekModel vyr,IEnumerable<DilModel> dilList )
+        {
+            if (await _dbService.AddVyrobekWithDilyAsync(vyr, dilList))
+            {
+                IsLoading = true;
+                Vyrobky.Add(vyr);
+                var viewableItem = _mapper.Map<VyrobekViewableModel>(vyr);
+                ViewableVyrobky.Add(viewableItem);
+                foreach (DilModel dil in dilList) 
+                {
+                    Dily.Add(dil);
+                }
+                IsLoading = false;
+            }
+        }
+
         private async void OnVyrobkyChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (IsLoading) return;  
+            if (IsLoading) return;
 
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                var newItems = e.NewItems.Cast<VyrobekModel>();
-                foreach (var newItem in newItems)
+                foreach (VyrobekModel newItem in e.NewItems)
                 {
-                    var vyrobekModel = _mapper.Map<VyrobekModel>(newItem);
-                    var dbVyrobekModel =  await _dbService.AddVyrobekModelAsync(vyrobekModel);
+                    if (await _dbService.AddVyrobekModelAsync(newItem))
+                    {
+                        var viewableItem = _mapper.Map<VyrobekViewableModel>(newItem);
+                        ViewableVyrobky.Add(viewableItem);
+                    }
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                var oldItems = e.OldItems.Cast<VyrobekModel>();
-                foreach (var oldItem in oldItems)
+                foreach (VyrobekModel oldItem in e.OldItems)
                 {
-                    var vyrobekModel = _mapper.Map<VyrobekModel>(oldItem);
-                    await _dbService.DeleteVyrobekModelAsync(vyrobekModel.VyrobekId);
+                    if (await _dbService.DeleteVyrobekModelAsync(oldItem.VyrobekId))
+                    {
+                        var viewableItem = _mapper.Map<VyrobekViewableModel>(oldItem);
+                        ViewableVyrobky.Remove(viewableItem);
+                    }
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Replace)
             {
-                var newItems = e.NewItems.Cast<VyrobekModel>();
-                var oldItems = e.OldItems.Cast<VyrobekModel>();
-
-                foreach (var newItem in newItems)
+                foreach (VyrobekModel newItem in e.NewItems)
                 {
-                    var vyrobekModel = _mapper.Map<VyrobekModel>(newItem);
-                    await _dbService.UpdateVyrobekModelAsync(vyrobekModel);
+                    if (await _dbService.UpdateVyrobekModelAsync(newItem))
+                    {
+                        var viewableItem = _mapper.Map<VyrobekViewableModel>(newItem);
+                    }
                 }
 
-                foreach (var oldItem in oldItems)
+                foreach (VyrobekModel oldItem in e.OldItems)
                 {
-                    var vyrobekModel = _mapper.Map<VyrobekModel>(oldItem);
-                    await _dbService.DeleteVyrobekModelAsync(vyrobekModel.VyrobekId);
+                    if (await _dbService.DeleteVyrobekModelAsync(oldItem.VyrobekId))
+                    {
+                        var viewableItem = _mapper.Map<VyrobekViewableModel>(oldItem);
+                        ViewableVyrobky.Remove(viewableItem);
+                    }
                 }
             }
         }

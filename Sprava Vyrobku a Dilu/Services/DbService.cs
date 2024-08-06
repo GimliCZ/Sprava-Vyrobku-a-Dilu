@@ -1,12 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Windows;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Sprava_Vyrobku_a_Dilu.Database;
 using Sprava_Vyrobku_a_Dilu.Database.Models;
-using Sprava_Vyrobku_a_Dilu.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace Sprava_Vyrobku_a_Dilu.Services
 {
@@ -20,6 +16,36 @@ namespace Sprava_Vyrobku_a_Dilu.Services
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
+        }
+
+        public async Task<bool> AddVyrobekWithDilyAsync(VyrobekModel vyrobekModel, IEnumerable<DilModel> dilModels)
+        {
+            ArgumentNullException.ThrowIfNull(vyrobekModel);
+            ArgumentNullException.ThrowIfNull(dilModels);
+
+            try
+            {
+                using var context = _dbContextFactory.CreateDbContext();
+
+                // Add the VyrobekModel to the context
+                context.Vyrobky.Add(vyrobekModel);
+                await context.SaveChangesAsync(); // Save changes to get the VyrobekId
+
+                // Now set the VyrobekId for each DilModel and add them to the context
+                foreach (var dilModel in dilModels)
+                {
+                    dilModel.VyrobekId = vyrobekModel.VyrobekId; // Set the foreign key
+                    context.Dily.Add(dilModel);
+                }
+
+                var changes = await context.SaveChangesAsync();
+                return changes > 0;
+            }
+            catch (Exception ex)
+            {
+                ShowError("AddVyrobekWithDilyAsync", ex);
+                return false;
+            }
         }
 
         #region DilModel Operations
@@ -185,22 +211,22 @@ namespace Sprava_Vyrobku_a_Dilu.Services
             }
         }
 
-        public async Task<List<VyrobekViewModel>> GetAllVyrobkyAsync()
+        public async Task<List<VyrobekModel>> GetAllVyrobkyAsync()
         {
             try
             {
                 using var context = _dbContextFactory.CreateDbContext();
                 if (!await AnyVyrobkyAsync())
                 {
-                    return new List<VyrobekViewModel>();
+                    return new List<VyrobekModel>();
                 }
 
-                return _mapper.Map<List<VyrobekViewModel>>(await context.Vyrobky.ToListAsync());
+                return _mapper.Map<List<VyrobekModel>>(await context.Vyrobky.ToListAsync());
             }
             catch (Exception ex)
             {
                 ShowError("GetAllVyrobkyAsync", ex);
-                return new List<VyrobekViewModel>();
+                return new List<VyrobekModel>();
             }
         }
 
@@ -264,7 +290,7 @@ namespace Sprava_Vyrobku_a_Dilu.Services
 
         private void ShowError(string methodName, Exception ex)
         {
-            MessageBox.Show($"Exception occurred in {methodName}: {ex.Message}\n{ex.StackTrace}",
+            MessageBox.Show($"Exception occurred in {methodName}: {ex.Message},{ex?.InnerException?.Message} \n{ex.StackTrace}",
                 "Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

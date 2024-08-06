@@ -12,11 +12,12 @@ namespace Sprava_Vyrobku_a_Dilu.Services
         Task<bool> DeleteDilModelAsync(int id);
         Task<bool> DeleteVyrobekModelAsync(int id);
         Task<IEnumerable<DilModel>> GetAllDilyAsync();
-        Task<List<Models.VyrobekModel>> GetAllVyrobkyAsync();
+        Task<List<VyrobekModel>> GetAllVyrobkyAsync();
         Task<int> GetCountOfDilyByVyrobekIdAsync(int vyrobekId);
         Task<DilModel?> GetDilModelByIdAsync(int id);
         Task<Database.Models.VyrobekModel?> GetVyrobekModelByIdAsync(int id);
         Task<bool> UpdateDilModelAsync(DilModel dilModel);
         Task<bool> UpdateVyrobekModelAsync(Database.Models.VyrobekModel vyrobekModel);
+        Task<bool> AddVyrobekWithDilyAsync(VyrobekModel vyrobekModel, IEnumerable<DilModel> dilModels);
     }
 }

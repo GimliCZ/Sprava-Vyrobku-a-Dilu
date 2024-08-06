@@ -47,22 +47,34 @@ namespace Sprava_Vyrobku_a_Dilu
             try
             {
                 await AppHost!.StartAsync();
+
                 var dbService = AppHost!.Services.GetRequiredService<IDbService>();
-                var observableData = AppHost!.Services.GetRequiredService<ObservableDataModel>();
-                observableData.IsLoading = true;
                 var mapper = AppHost!.Services.GetRequiredService<IMapper>();
-                var data = mapper.Map<List<VyrobekViewModel>>( await dbService.GetAllVyrobkyAsync());
-               
-                foreach (var vyrobekViewModel in data)
+                var observableData = AppHost!.Services.GetRequiredService<ObservableDataModel>();
+
+                observableData.IsLoading = true;
+
+                var vyrobky = await dbService.GetAllVyrobkyAsync();
+                var dily = await dbService.GetAllDilyAsync();
+                
+                foreach (var d in dily)
                 {
-                    observableData.Vyrobky.Add(vyrobekViewModel);
+                    observableData.Dily.Add(d);
                 }
 
-                observableData.Dily = new(await dbService.GetAllDilyAsync());
+                foreach (var vyrobekModel in vyrobky)
+                {
+                    observableData.Vyrobky.Add(vyrobekModel);
+                    var viewableModel = mapper.Map<VyrobekViewableModel>(vyrobekModel);
+                    viewableModel.CountOfDily = observableData.Dily.Count(d => d.VyrobekId == vyrobekModel.VyrobekId);
+                    observableData.ViewableVyrobky.Add(viewableModel);
+                }
 
                 var startupForm = AppHost!.Services.GetRequiredService<MainWindow>();
                 startupForm.Show();
+
                 observableData.IsLoading = false;
+
                 base.OnStartup(e);
                 await AppHost.WaitForShutdownAsync();
             }

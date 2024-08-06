@@ -226,7 +226,7 @@ namespace Sprava_Vyrobku_a_Dilu
             }
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             try 
             {
@@ -264,21 +264,20 @@ namespace Sprava_Vyrobku_a_Dilu
                 }
 
                 // Create new VyrobekModel
-                var newVyrobek = new VyrobekViewModel()
+                var newVyrobek = new VyrobekModel(nazevVyrobek, cenaVyrobekVerif)
                 {
-                    Nazev = nazevVyrobek,
-                    Cena = cenaVyrobekVerif,
                     Popis = popisVyrobek,
                     Poznamka = poznamkaVyrobek,
                     Upraveno = DateTime.Now
                 };
-
-                // Add the new VyrobekModel to the collection
-                _observableDataModel.Vyrobky.Add(newVyrobek);
-                var NewDil = new DilModel(nazevVyrobek, cenaVyrobekVerif, ) 
+                var NewDil = new DilModel(nazevVyrobek, cenaVyrobekVerif, newVyrobek.VyrobekId)
                 {
-                    
-                }
+                    Popis = popisVyrobek,
+                    Upraveno = DateTime.Now
+                };
+                var listDil = new List<DilModel>() { NewDil };
+
+                await _observableDataModel.Create(newVyrobek, listDil);
 
             }
             catch (Exception ex) 

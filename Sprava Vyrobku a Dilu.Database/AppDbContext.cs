@@ -18,7 +18,8 @@ namespace Sprava_Vyrobku_a_Dilu.Database
                 .ToTable("DilModel")
                 .HasOne(d => d.Vyrobek)
                 .WithMany(v => v.Dily)
-                .HasForeignKey(d => d.VyrobekId);
+                .HasForeignKey(d => d.VyrobekId)
+                .IsRequired();
 
             modelBuilder.Entity<VyrobekModel>()
                 .ToTable("VyrobekModel");
