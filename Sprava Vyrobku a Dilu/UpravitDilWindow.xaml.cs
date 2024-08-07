@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Sprava_Vyrobku_a_Dilu.Core;
 using Sprava_Vyrobku_a_Dilu.Database.Models;
@@ -19,19 +20,28 @@ using Sprava_Vyrobku_a_Dilu.Models;
 namespace Sprava_Vyrobku_a_Dilu
 {
     /// <summary>
-    /// Interakční logika pro UpravitVyrobek.xaml
+    /// Interakční logika pro UpravitDil.xaml
     /// </summary>
-    public partial class UpravitVyrobek : Window
+    public partial class UpravitDilWindow : Window
     {
         private ObservableDataProvider _observableDataModel;
-        public UpravitVyrobek(ObservableDataProvider observableDataModel)
+        public UpravitDilWindow(ObservableDataProvider observableDataProvider)
         {
+            _observableDataModel = observableDataProvider;
             InitializeComponent();
-            _observableDataModel = observableDataModel;
+            
         }
+
+        public int EditedVyrobekId = 0;
+        public int EditedDilId = 0;
 
         #region Vizual
 
+        private NumberFormatInfo numberFormat = new()
+        {
+            NumberDecimalSeparator = ".",
+            NumberDecimalDigits = 4
+        };
 
         public int Controlsize { get; set; } = 12;
 
@@ -45,8 +55,6 @@ namespace Sprava_Vyrobku_a_Dilu
 
         public int ImageHeightFix { get; set; } = 400;
         public int ImageWeightFix { get; set; } = 710;
-
-        public int EditedId = 0;
 
         private void Exit_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -226,34 +234,33 @@ namespace Sprava_Vyrobku_a_Dilu
             }
         }
         #endregion
-        public void PrepareEdit(VyrobekViewableModel model)
+
+        public void PrepareEdit(DilModel model)
         {
-            EditedId = model.VyrobekId;
+            EditedVyrobekId = model.VyrobekId;
+            EditedDilId = model.DilId;
             NazevVyrobek.Text = model.Nazev;
-            CenaVyrobek.Text = model.Cena.ToString();
+            CenaVyrobek.Text = model.Cena.ToString(numberFormat);
             PopisVyrobek.Text = model.Popis;
-            PoznamkaVyrobek.Text = model.Poznamka;
         }
 
         public void PostEdit()
         {
-            EditedId = 0;
+            EditedVyrobekId = 0;
+            EditedDilId = 0;
             NazevVyrobek.Text = string.Empty;
             CenaVyrobek.Text = string.Empty;
             PopisVyrobek.Text = string.Empty;
-            PoznamkaVyrobek.Text = string.Empty;
         }
 
         private async void EditButton_Click(object sender, RoutedEventArgs e)
         {
-
             try
             {
                 // Sanitize inputs by trimming whitespace
                 var nazevVyrobek = NazevVyrobek.Text.Trim();
                 var cenaVyrobek = CenaVyrobek.Text.Trim();
                 var popisVyrobek = PopisVyrobek.Text.Trim();
-                var poznamkaVyrobek = PoznamkaVyrobek.Text.Trim();
 
                 // Validation
                 if (string.IsNullOrWhiteSpace(nazevVyrobek))
@@ -275,22 +282,30 @@ namespace Sprava_Vyrobku_a_Dilu
                     return;
                 }
 
-                // Create new VyrobekModel
-                var newVyrobek = new VyrobekModel(nazevVyrobek, cenaVyrobekVerif)
+                // Create new NewDil
+                var NewDil = new DilModel(nazevVyrobek, cenaVyrobekVerif, EditedVyrobekId)
                 {
-                    VyrobekId = EditedId,
                     Popis = popisVyrobek,
-                    Poznamka = poznamkaVyrobek,
-                    Upraveno = DateTime.Now
+                    Upraveno = DateTime.Now,
+                    DilId = EditedDilId
                 };
 
-                await _observableDataModel.UpdateVyrobek(newVyrobek);
+                if (!await _observableDataModel.UpdateDil(NewDil))
+                {
+                    MessageBox.Show("Error occured during Update Dil operation", "Error ", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Exception just occurred: " + ex.Message, "Exception ", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
+        }
+        private void CenaVyrobek_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (CenaVyrobek.Text.Contains(","))
+            {
+                CenaVyrobek.Text = CenaVyrobek.Text.Replace(",", ".");
+            }
         }
     }
 }

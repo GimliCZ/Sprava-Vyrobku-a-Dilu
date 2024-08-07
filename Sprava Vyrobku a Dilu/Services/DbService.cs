@@ -124,10 +124,10 @@ namespace Sprava_Vyrobku_a_Dilu.Services
             try
             {
                 using var context = _dbContextFactory.CreateDbContext();
-                var existingDilModel = await context.Dily.FindAsync(dilModel.DilId);
+                var existingDilModel = context.Dily.Where(x => x.DilId == dilModel.DilId).SingleOrDefault();
                 if (existingDilModel == null)
                     return false;
-
+                dilModel.Zalozeno = existingDilModel.Zalozeno;
                 context.Entry(existingDilModel).CurrentValues.SetValues(dilModel);
                 var changes = await context.SaveChangesAsync();
                 return changes > 0;
@@ -260,7 +260,7 @@ namespace Sprava_Vyrobku_a_Dilu.Services
                 var existingVyrobekModel = await context.Vyrobky.FindAsync(vyrobekModel.VyrobekId);
                 if (existingVyrobekModel == null)
                     return false;
-
+                vyrobekModel.Zalozeno = existingVyrobekModel.Zalozeno;
                 context.Entry(existingVyrobekModel).CurrentValues.SetValues(vyrobekModel);
                 var changes = await context.SaveChangesAsync();
                 return changes > 0;

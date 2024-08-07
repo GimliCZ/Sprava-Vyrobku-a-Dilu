@@ -13,7 +13,7 @@ namespace Sprava_Vyrobku_a_Dilu.Database.Models
         public string? Popis { get; set; }
         [Required]
         public decimal Cena { get; set; }
-        public DateTime Zalozeno { get; init; } = DateTime.UtcNow;
+        public DateTime Zalozeno { get; set; } = DateTime.UtcNow;
         public DateTime? Upraveno { get; set; }
         [Required]
         public int VyrobekId { get; set; }

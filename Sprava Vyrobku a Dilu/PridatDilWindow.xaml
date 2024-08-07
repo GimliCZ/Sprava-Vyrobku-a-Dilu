@@ -56,7 +56,7 @@
 
                     <TextBox x:Name="NazevVyrobek"  Grid.Row="0" Grid.Column="1" Margin="10 0" MaxLength="255"/>
                     <TextBox x:Name="PopisVyrobek"  Grid.Row="1" Grid.Column="1" Margin="10 0" MaxLength="255" />
-                    <TextBox x:Name="CenaVyrobek"  Grid.Row="2" Grid.Column="1" Margin="10 0" MaxLength="255"/>
+                    <TextBox x:Name="CenaVyrobek"  Grid.Row="2" Grid.Column="1" Margin="10 0" MaxLength="255" TextChanged="CenaVyrobek_TextChanged"/>
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>

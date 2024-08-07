@@ -27,18 +27,21 @@ namespace Sprava_Vyrobku_a_Dilu
         public ObservableDataProvider ObservableDataModel { get; set; }
         private readonly PridatDilWindow _pridatDilWindow;
         private readonly PridatVyrobekWindow _pridatVyrobekWindow;
-        private readonly UpravitVyrobek _upravitVyrobek;
+        private readonly UpravitVyrobekWindow _upravitVyrobekWindow;
+        private readonly UpravitDilWindow _upravitDilWindow;
         public MainWindow(IDbService dbService,
             ObservableDataProvider visibleDataModel,
             PridatVyrobekWindow pridatVyrobekWindow,
             PridatDilWindow pridatDilWindow,
-            UpravitVyrobek upravitVyrobek)
+            UpravitVyrobekWindow upravitVyrobek,
+            UpravitDilWindow upravitDilWindow)
         {
             _dbService = dbService;
             ObservableDataModel = visibleDataModel;
             _pridatDilWindow = pridatDilWindow;
             _pridatVyrobekWindow = pridatVyrobekWindow;
-            _upravitVyrobek = upravitVyrobek;
+            _upravitVyrobekWindow = upravitVyrobek;
+            _upravitDilWindow = upravitDilWindow;
             InitializeComponent();
             DataContext = this;
             ObservableDataModel.ViewableVyrobky.CollectionChanged += ViewableVyrobky_CollectionChanged;
@@ -73,6 +76,10 @@ namespace Sprava_Vyrobku_a_Dilu
 
         private void Exit_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            _pridatDilWindow.Close();
+            _pridatVyrobekWindow.Close();
+            _upravitVyrobekWindow.Close();
+            _upravitDilWindow.Close();
             Close();
         }
 
@@ -244,16 +251,23 @@ namespace Sprava_Vyrobku_a_Dilu
             }
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e)
+        private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
-
+            try 
+            { 
+               await ObservableDataModel.Refresh();
+            }
+            catch(Exception ex) 
+            {
+                MessageBox.Show("Exception occured on Refresh" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ShowHelp_Click(object sender, RoutedEventArgs e)
         {
 
         }
-       
+
         private void ShowAbout_Click(object sender, RoutedEventArgs e)
         {
 
@@ -291,14 +305,43 @@ namespace Sprava_Vyrobku_a_Dilu
 
         }
 
-        private void OdstranitDil_Click(object sender, RoutedEventArgs e)
+        private async void OdstranitDil_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                var data = dataGridDily.SelectedItem as DilModel;
+                if (data != null && data is DilModel)
+                {
+                    await ObservableDataModel.RemoveDil(data);
+                    return;
+                }
+
+                foreach (var datagrid in FindVisualChildren<DataGrid>(this))
+                {
+                    if (datagrid.Name == "InnerGrid")
+                    {
+                        var innterData = datagrid.SelectedItem as DilModel;
+                        if (innterData != null && innterData is DilModel)
+                        {
+                            await ObservableDataModel.RemoveDil(innterData);
+                            return;
+                        }
+                    }
+                }
+                MessageBox.Show("Vyberte prvek k odstranění.");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception occured on OdstranitDil" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         private void NovyVyrobek_Click(object sender, RoutedEventArgs e)
         {
             _pridatVyrobekWindow.Show();
-            
+
         }
 
         private async void OdstranitVyrobek_Click(object sender, RoutedEventArgs e)
@@ -308,7 +351,7 @@ namespace Sprava_Vyrobku_a_Dilu
                 var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
                 if (data != null)
                 {
-                    if(!await ObservableDataModel.RemoveVyrobek(data))
+                    if (!await ObservableDataModel.RemoveVyrobek(data))
                     {
                         MessageBox.Show("Došlo k chybě při pokusu o odstranění výrobku.");
                     }
@@ -318,7 +361,7 @@ namespace Sprava_Vyrobku_a_Dilu
                     MessageBox.Show("Vyberte prvek k odstranění.");
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show("Exception occured on OdstranitVyrobek" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -330,11 +373,6 @@ namespace Sprava_Vyrobku_a_Dilu
         {
             var list = ObservableDataModel.ViewableVyrobky.SelectMany(x => x.Dily).ToList();
             dataGridDily.ItemsSource = list;
-        }
-
-        private void dataGridVyrobky_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            UpdateVyrobku();
         }
 
         private void UpravitVyrobek_Click(object sender, RoutedEventArgs e)
@@ -349,8 +387,8 @@ namespace Sprava_Vyrobku_a_Dilu
                 var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
                 if (data != null)
                 {
-                    _upravitVyrobek.PrepareEdit(data);
-                    _upravitVyrobek.Show();
+                    _upravitVyrobekWindow.PrepareEdit(data);
+                    _upravitVyrobekWindow.Show();
                 }
                 else
                 {
@@ -365,7 +403,85 @@ namespace Sprava_Vyrobku_a_Dilu
 
         private void UpravitDil_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                var data = dataGridDily.SelectedItem as DilModel;
+                if (data != null && data is DilModel)
+                {
+                    _upravitDilWindow.PrepareEdit(data);
+                    _upravitDilWindow.Show();
+                    return;
+                }
 
+                foreach (var datagrid in FindVisualChildren<DataGrid>(this))
+                {
+                    if (datagrid.Name == "InnerGrid")
+                    {
+                        var innterData = datagrid.SelectedItem as DilModel;
+                        if (innterData != null && innterData is DilModel)
+                        {
+                            _upravitDilWindow.PrepareEdit(innterData);
+                            _upravitDilWindow.Show();
+                            return;
+                        }
+                    }
+                }
+                MessageBox.Show("Vyberte prvek k úpravě.");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception occured on UpravitVyrobek" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+
+                    if (child == null)
+                    {
+                        continue;
+                    }
+
+                    if (child is T) yield return (T)child;
+
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                        yield return childOfChild;
+                }
+            }
+        }
+
+        private void dataGridDily_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var data = dataGridDily.SelectedItem as DilModel;
+            if (data != null && data is DilModel)
+            {
+                var vyrobekToSelect = ObservableDataModel.ViewableVyrobky.Where(x => x.VyrobekId == data.VyrobekId).SingleOrDefault();
+                if (vyrobekToSelect != null)
+                {
+                    // Get the ItemsSource of dataGridVyrobky
+                    var itemsSource = dataGridVyrobky.ItemsSource as IList<VyrobekViewableModel>;
+
+                    if (itemsSource != null)
+                    {
+                        // Find the index of the item to select
+                        var index = itemsSource.IndexOf(vyrobekToSelect);
+
+                        if (index >= 0)
+                        {
+                            // Set the selected index and scroll into view
+                            dataGridVyrobky.SelectedIndex = index;
+                            dataGridVyrobky.ScrollIntoView(vyrobekToSelect);
+                        }
+                    }
+                }
+                return;
+            }
         }
     }
 }

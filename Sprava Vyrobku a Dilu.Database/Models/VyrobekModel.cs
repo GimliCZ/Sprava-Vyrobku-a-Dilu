@@ -14,7 +14,7 @@ namespace Sprava_Vyrobku_a_Dilu.Database.Models
         [Required]
         public decimal Cena { get; set; }
         public string? Poznamka { get; set; }
-        public DateTime Zalozeno { get; init; } = DateTime.Now;
+        public DateTime Zalozeno { get; set; } = DateTime.Now;
         public DateTime? Upraveno { get; set; }
         public ICollection<DilModel> Dily {get;} = new List<DilModel>();
 

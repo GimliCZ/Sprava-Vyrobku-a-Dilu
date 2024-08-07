@@ -37,8 +37,8 @@ namespace Sprava_Vyrobku_a_Dilu
                     services.AddAutoMapper(typeof(MappingProfile));
                     services.AddTransient<PridatDilWindow>();
                     services.AddTransient<PridatVyrobekWindow>();
-                    services.AddTransient<UpravitVyrobek>();
-                    services.AddTransient<UpravitDil>();
+                    services.AddTransient<UpravitVyrobekWindow>();
+                    services.AddTransient<UpravitDilWindow>();
                     services.AddSingleton<MainWindow>();
                     //telemetry etc. 
                 })

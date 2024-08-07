@@ -34,6 +34,12 @@ namespace Sprava_Vyrobku_a_Dilu
 
         #region Vizual
 
+        private NumberFormatInfo numberFormat = new()
+        {
+            NumberDecimalSeparator = ".",
+            NumberDecimalDigits = 4
+        };
+
         public int Controlsize { get; set; } = 12;
 
         public int Controlsize2 { get; set; } = 9;
@@ -235,7 +241,7 @@ namespace Sprava_Vyrobku_a_Dilu
         {
             EditedId = model.VyrobekId;
             NazevVyrobek.Text = model.Nazev;
-            CenaVyrobek.Text = model.Cena.ToString();
+            CenaVyrobek.Text = model.Cena.ToString(numberFormat);
             PopisVyrobek.Text = model.Popis;
         }
 
@@ -264,12 +270,6 @@ namespace Sprava_Vyrobku_a_Dilu
                 }
 
 
-                // Create a custom NumberFormatInfo with dot as the decimal separator
-                var numberFormat = new NumberFormatInfo
-                {
-                    NumberDecimalSeparator = "."
-                };
-
                 // Parse the decimal using the custom NumberFormatInfo
                 if (!decimal.TryParse(cenaVyrobek, NumberStyles.Number, numberFormat, out var cenaVyrobekVerif))
                 {
@@ -294,6 +294,14 @@ namespace Sprava_Vyrobku_a_Dilu
                 MessageBox.Show("Exception just occurred: " + ex.Message, "Exception ", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+        }
+
+        private void CenaVyrobek_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (CenaVyrobek.Text.Contains(",")) 
+            {
+                CenaVyrobek.Text = CenaVyrobek.Text.Replace(",", ".");
+            }
         }
     }
 }

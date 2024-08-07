@@ -15,20 +15,19 @@ using System.Windows.Shapes;
 using Sprava_Vyrobku_a_Dilu.Core;
 using Sprava_Vyrobku_a_Dilu.Database.Models;
 using Sprava_Vyrobku_a_Dilu.Models;
-using Sprava_Vyrobku_a_Dilu.Services;
 
 namespace Sprava_Vyrobku_a_Dilu
 {
     /// <summary>
-    /// Interakční logika pro PridatDilWindow.xaml
+    /// Interakční logika pro UpravitVyrobek.xaml
     /// </summary>
-    public partial class PridatVyrobekWindow : Window
+    public partial class UpravitVyrobekWindow : Window
     {
         private ObservableDataProvider _observableDataModel;
-        public PridatVyrobekWindow(ObservableDataProvider observableDataModel)
+        public UpravitVyrobekWindow(ObservableDataProvider observableDataModel)
         {
-            _observableDataModel = observableDataModel;
             InitializeComponent();
+            _observableDataModel = observableDataModel;
         }
 
         #region Vizual
@@ -51,6 +50,8 @@ namespace Sprava_Vyrobku_a_Dilu
         public int ImageHeightFix { get; set; } = 400;
         public int ImageWeightFix { get; set; } = 710;
 
+        public int EditedId = 0;
+
         private void Exit_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Exit_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/Exit_pressed.png")));
@@ -58,6 +59,7 @@ namespace Sprava_Vyrobku_a_Dilu
 
         private void Exit_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            PostEdit();
             Hide();
         }
 
@@ -172,7 +174,6 @@ namespace Sprava_Vyrobku_a_Dilu
             }
 
         }
-
         private void Minimize_button_MouseEnter(object sender, MouseEventArgs e)
         {
             Minimize_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/Minimize_howered.png")));
@@ -229,8 +230,27 @@ namespace Sprava_Vyrobku_a_Dilu
             }
         }
         #endregion
-        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        public void PrepareEdit(VyrobekViewableModel model)
         {
+            EditedId = model.VyrobekId;
+            NazevVyrobek.Text = model.Nazev;
+            CenaVyrobek.Text = model.Cena.ToString(numberFormat);
+            PopisVyrobek.Text = model.Popis;
+            PoznamkaVyrobek.Text = model.Poznamka;
+        }
+
+        public void PostEdit()
+        {
+            EditedId = 0;
+            NazevVyrobek.Text = string.Empty;
+            CenaVyrobek.Text = string.Empty;
+            PopisVyrobek.Text = string.Empty;
+            PoznamkaVyrobek.Text = string.Empty;
+        }
+
+        private async void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+
             try
             {
                 // Sanitize inputs by trimming whitespace
@@ -245,20 +265,6 @@ namespace Sprava_Vyrobku_a_Dilu
                     MessageBox.Show("Nazev is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
-                // Check for duplicate name
-                if (_observableDataModel.IsPresent(nazevVyrobek))
-                {
-                    var result = MessageBox.Show("A Vyrobek with this name already exists. Do you want to add it anyway?",
-                                                 "Duplicate Found",
-                                                 MessageBoxButton.YesNo,
-                                                 MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.No)
-                    {
-                        return;
-                    }
-                }
-
 
                 // Create a custom NumberFormatInfo with dot as the decimal separator
                 var numberFormat = new NumberFormatInfo
@@ -276,30 +282,24 @@ namespace Sprava_Vyrobku_a_Dilu
                 // Create new VyrobekModel
                 var newVyrobek = new VyrobekModel(nazevVyrobek, cenaVyrobekVerif)
                 {
+                    VyrobekId = EditedId,
                     Popis = popisVyrobek,
                     Poznamka = poznamkaVyrobek,
                     Upraveno = DateTime.Now
                 };
-                var NewDil = new DilModel(nazevVyrobek, cenaVyrobekVerif, newVyrobek.VyrobekId)
-                {
-                    Popis = popisVyrobek,
-                    Upraveno = DateTime.Now
-                };
-                var listDil = new List<DilModel>() { NewDil };
 
-                if (!await _observableDataModel.AddVyrobekAndDily(newVyrobek, listDil))
+                if (!await _observableDataModel.UpdateVyrobek(newVyrobek))
                 {
-                    MessageBox.Show("Error occured during Add Vyrobek And Dily operation", "Error ", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Error occured during Update Vyrobek operation", "Error ", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Exception just occurred: " + ex.Message, "Exception ", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-
         }
+
         private void CenaVyrobek_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (CenaVyrobek.Text.Contains(","))

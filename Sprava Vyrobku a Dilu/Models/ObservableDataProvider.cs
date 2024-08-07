@@ -37,13 +37,15 @@ namespace Sprava_Vyrobku_a_Dilu.Models
             return Vyrobky.Any(v => v.Nazev.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
         //TODO: Předělat
-        public async Task AddVyrobekAndDily(VyrobekModel vyr,IEnumerable<DilModel> dilList )
+        public async Task<bool> AddVyrobekAndDily(VyrobekModel vyr,IEnumerable<DilModel> dilList )
         {
             if (await _dbService.AddVyrobekWithDilyAsync(vyr, dilList))
             {
                 var viewableItem = _mapper.Map<VyrobekViewableModel>(vyr);
                 ViewableVyrobky.Add(viewableItem);
+                return true;
             }
+            return false;
         }
         public async Task<bool> RemoveVyrobek(VyrobekViewableModel vyrobek)
         {
@@ -58,13 +60,14 @@ namespace Sprava_Vyrobku_a_Dilu.Models
         public async Task<bool> UpdateVyrobek(VyrobekModel vyrobek)
         {
 
-            var vyrobekToUpgrade = ViewableVyrobky.Where(p => p.VyrobekId == vyrobek.VyrobekId);
+            var vyrobekToUpgrade = ViewableVyrobky.Where(p => p.VyrobekId == vyrobek.VyrobekId).SingleOrDefault();
 
-            if (vyrobekToUpgrade.Any())
+            if (vyrobekToUpgrade != null && vyrobekToUpgrade is VyrobekViewableModel)
             {
                 if (await _dbService.UpdateVyrobekModelAsync(vyrobek))
                 {
-                    ViewableVyrobky.Remove(vyrobekToUpgrade.First());
+                    vyrobek.Zalozeno = vyrobekToUpgrade.Zalozeno;
+                    ViewableVyrobky.Remove(vyrobekToUpgrade);
                     ViewableVyrobky.Add(_mapper.Map<VyrobekViewableModel>(vyrobek));
                     return true;
                 }
@@ -108,6 +111,7 @@ namespace Sprava_Vyrobku_a_Dilu.Models
                     var oldDil = model.Dily.Where(x => x.DilId == dil.DilId).SingleOrDefault();
                     if (oldDil != null)
                     {
+                        dil.Zalozeno = oldDil.Zalozeno;
                         ViewableVyrobky.Remove(model);
                         model.Dily.Remove(oldDil);
                         model.Dily.Add(dil);
@@ -142,7 +146,6 @@ namespace Sprava_Vyrobku_a_Dilu.Models
 
         public async Task Refresh()
         {
-
             var vyrobky = await _dbService.GetAllVyrobkyAsync();
             var dily = await _dbService.GetAllDilyAsync();
             Vyrobky.Clear();
