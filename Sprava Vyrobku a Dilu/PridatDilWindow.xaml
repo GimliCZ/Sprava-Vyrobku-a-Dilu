@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Sprava_Vyrobku_a_Dilu"
     SizeChanged="Window_SizeChanged"
     mc:Ignorable="d"
-    Title="Sprava_Vyrobku_a_Dilu" Height="400" Width="400" d:DesignWidth="400" MaxWidth="2000" MaxHeight="1200" Icon="SVD.ico" WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize">
+    Title="Sprava_Vyrobku_a_Dilu" Height="250" Width="400" d:DesignWidth="400" MaxWidth="2000" MaxHeight="1200" Icon="SVD.ico" WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize">
     <Window.Background>
         <SolidColorBrush Color="Transparent"></SolidColorBrush>
     </Window.Background>
@@ -30,7 +30,41 @@
                     <Image Source="/img/Maximize_default.png" Grid.Column="3" Grid.Row="0" Name="Maximize_button"  VerticalAlignment="Top" HorizontalAlignment="Right" MouseEnter="Maximize_button_MouseEnter" MouseLeave="Maximize_button_MouseLeave" MouseLeftButtonDown="Maximize_button_MouseLeftButtonDown" MouseLeftButtonUp="Maximize_button_MouseLeftButtonUp" />
                     <Image Source="/img/Minimize_default.png" Grid.Column="2" Grid.Row="0" Name="Minimize_button"  VerticalAlignment="Top" HorizontalAlignment="Right" MouseEnter="Minimize_button_MouseEnter" MouseLeave="Minimize_button_MouseLeave" MouseLeftButtonDown="Minimize_button_MouseLeftButtonDown" MouseLeftButtonUp="Minimize_button_MouseLeftButtonUp"/>
                     <Image Source="/img/ikona.png" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Visibility="Visible" Margin="10 0 0 0"/>
-                    <Label Content="SVD - Přidat díl" Grid.Row="0" Grid.Column="0" Width="175" HorizontalAlignment="Left" Padding="40 2 0 2"  VerticalAlignment="Center"/>
+                    <Label Content="Správa Výrobků a Dílů" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Width="175" HorizontalAlignment="Left" Padding="40 2 0 2"  VerticalAlignment="Center"/>
+                </Grid>
+                <TextBlock Text="Přidat Díl"
+                    FontWeight="Bold"
+                    FontSize="14"
+                    Margin="5"
+                           HorizontalAlignment="Center"
+                 />
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="Název (Povinné)" HorizontalAlignment="Stretch" BorderBrush="Black" BorderThickness="1"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Popis" HorizontalAlignment="Stretch" BorderBrush="Black" BorderThickness="1"/>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Cena [Kč] (Povinné)" HorizontalAlignment="Stretch" BorderBrush="Black" BorderThickness="1"/>
+
+                    <TextBox x:Name="NazevVyrobek"  Grid.Row="0" Grid.Column="1" Margin="10 0" MaxLength="255"/>
+                    <TextBox x:Name="PopisVyrobek"  Grid.Row="1" Grid.Column="1" Margin="10 0" MaxLength="255" />
+                    <TextBox x:Name="CenaVyrobek"  Grid.Row="2" Grid.Column="1" Margin="10 0" MaxLength="255"/>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="SaveButton" Content="Uložit" Height="40" Grid.Column="1" Click="SaveButton_Click"/>
                 </Grid>
             </StackPanel>
         </Grid>

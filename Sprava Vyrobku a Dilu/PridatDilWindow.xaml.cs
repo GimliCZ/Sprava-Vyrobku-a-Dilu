@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Sprava_Vyrobku_a_Dilu.Core;
+using Sprava_Vyrobku_a_Dilu.Database.Models;
+using Sprava_Vyrobku_a_Dilu.Models;
 
 namespace Sprava_Vyrobku_a_Dilu
 {
@@ -20,11 +23,16 @@ namespace Sprava_Vyrobku_a_Dilu
     /// </summary>
     public partial class PridatDilWindow : Window
     {
-        public PridatDilWindow()
+        private ObservableDataProvider _observableDataModel;
+        public PridatDilWindow(ObservableDataProvider observableDataModel)
         {
             InitializeComponent();
+            _observableDataModel = observableDataModel;
         }
 
+        public int EditedId;
+
+        #region Vizual
 
         public int Controlsize { get; set; } = 12;
 
@@ -39,7 +47,7 @@ namespace Sprava_Vyrobku_a_Dilu
         public int ImageHeightFix { get; set; } = 400;
         public int ImageWeightFix { get; set; } = 710;
 
-
+        public int VyrobekId = 0;
 
 
         private void Exit_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -49,7 +57,8 @@ namespace Sprava_Vyrobku_a_Dilu
 
         private void Exit_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Close();
+            PostAdd();
+            Hide();
         }
 
         private void Exit_button_MouseLeave(object sender, MouseEventArgs e)
@@ -218,6 +227,73 @@ namespace Sprava_Vyrobku_a_Dilu
                 Heightfix = heightfixtemp;
                 Heightfix2 = heightfixtemp + 270;
             }
+        }
+        #endregion
+
+
+        public void PrepareAdd(VyrobekViewableModel model)
+        {
+            EditedId = model.VyrobekId;
+            NazevVyrobek.Text = model.Nazev;
+            CenaVyrobek.Text = model.Cena.ToString();
+            PopisVyrobek.Text = model.Popis;
+        }
+
+        public void PostAdd()
+        {
+            EditedId = 0;
+            NazevVyrobek.Text = string.Empty;
+            CenaVyrobek.Text = string.Empty;
+            PopisVyrobek.Text = string.Empty;
+        }
+
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Sanitize inputs by trimming whitespace
+                var nazevVyrobek = NazevVyrobek.Text.Trim();
+                var cenaVyrobek = CenaVyrobek.Text.Trim();
+                var popisVyrobek = PopisVyrobek.Text.Trim();
+
+                // Validation
+                if (string.IsNullOrWhiteSpace(nazevVyrobek))
+                {
+                    MessageBox.Show("Nazev is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+
+                // Create a custom NumberFormatInfo with dot as the decimal separator
+                var numberFormat = new NumberFormatInfo
+                {
+                    NumberDecimalSeparator = "."
+                };
+
+                // Parse the decimal using the custom NumberFormatInfo
+                if (!decimal.TryParse(cenaVyrobek, NumberStyles.Number, numberFormat, out var cenaVyrobekVerif))
+                {
+                    MessageBox.Show("Cena must be a valid number with a decimal point.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var NewDil = new DilModel(nazevVyrobek, cenaVyrobekVerif, EditedId)
+                {
+                    Popis = popisVyrobek,
+                    Upraveno = DateTime.Now
+                };
+
+                if (!await _observableDataModel.AddDil(NewDil))
+                {
+                    MessageBox.Show("Error occured during add Dil operation", "Error ", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception just occurred: " + ex.Message, "Exception ", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
     }
 }

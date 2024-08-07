@@ -33,10 +33,12 @@ namespace Sprava_Vyrobku_a_Dilu
                     services.AddDbContextFactory<AppDbContext>(options =>
                     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
                     services.AddSingleton<IDbService,DbService>();
-                    services.AddSingleton<ObservableDataModel>();
+                    services.AddSingleton<ObservableDataProvider>();
                     services.AddAutoMapper(typeof(MappingProfile));
-                    services.AddSingleton<PridatDilWindow>();
-                    services.AddSingleton<PridatVyrobekWindow>();
+                    services.AddTransient<PridatDilWindow>();
+                    services.AddTransient<PridatVyrobekWindow>();
+                    services.AddTransient<UpravitVyrobek>();
+                    services.AddTransient<UpravitDil>();
                     services.AddSingleton<MainWindow>();
                     //telemetry etc. 
                 })
@@ -48,32 +50,11 @@ namespace Sprava_Vyrobku_a_Dilu
             {
                 await AppHost!.StartAsync();
 
-                var dbService = AppHost!.Services.GetRequiredService<IDbService>();
-                var mapper = AppHost!.Services.GetRequiredService<IMapper>();
-                var observableData = AppHost!.Services.GetRequiredService<ObservableDataModel>();
-
-                observableData.IsLoading = true;
-
-                var vyrobky = await dbService.GetAllVyrobkyAsync();
-                var dily = await dbService.GetAllDilyAsync();
-                
-                foreach (var d in dily)
-                {
-                    observableData.Dily.Add(d);
-                }
-
-                foreach (var vyrobekModel in vyrobky)
-                {
-                    observableData.Vyrobky.Add(vyrobekModel);
-                    var viewableModel = mapper.Map<VyrobekViewableModel>(vyrobekModel);
-                    viewableModel.CountOfDily = observableData.Dily.Count(d => d.VyrobekId == vyrobekModel.VyrobekId);
-                    observableData.ViewableVyrobky.Add(viewableModel);
-                }
+                var observableData = AppHost!.Services.GetRequiredService<ObservableDataProvider>();
+                await observableData.Refresh();
 
                 var startupForm = AppHost!.Services.GetRequiredService<MainWindow>();
                 startupForm.Show();
-
-                observableData.IsLoading = false;
 
                 base.OnStartup(e);
                 await AppHost.WaitForShutdownAsync();
@@ -94,13 +75,13 @@ namespace Sprava_Vyrobku_a_Dilu
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Exception occured on Exit" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Exception occured on Exit" + ex.Message + ex.StackTrace, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
         }
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show("An unhandled exception just occurred: " + e.Exception.Message, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("An unhandled exception just occurred: " + e.Exception.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
             e.Handled = true;
         }
     }

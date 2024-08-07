@@ -28,16 +28,16 @@ namespace Sprava_Vyrobku_a_Dilu.Services
                 using var context = _dbContextFactory.CreateDbContext();
 
                 // Add the VyrobekModel to the context
-                context.Vyrobky.Add(vyrobekModel);
+                await context.Vyrobky.AddAsync(vyrobekModel);
                 await context.SaveChangesAsync(); // Save changes to get the VyrobekId
 
                 // Now set the VyrobekId for each DilModel and add them to the context
                 foreach (var dilModel in dilModels)
                 {
                     dilModel.VyrobekId = vyrobekModel.VyrobekId; // Set the foreign key
-                    context.Dily.Add(dilModel);
                 }
 
+                await context.Dily.AddRangeAsync(dilModels);
                 var changes = await context.SaveChangesAsync();
                 return changes > 0;
             }
@@ -71,7 +71,7 @@ namespace Sprava_Vyrobku_a_Dilu.Services
             try
             {
                 using var context = _dbContextFactory.CreateDbContext();
-                context.Dily.Add(dilModel);
+                await context.Dily.AddAsync(dilModel);
                 var changes = await context.SaveChangesAsync();
                 return changes > 0;
             }
@@ -159,6 +159,26 @@ namespace Sprava_Vyrobku_a_Dilu.Services
             }
         }
 
+        public async Task<bool> DeleteDilByVyrobekModelAsync(int idVyrobek)
+        {
+            try
+            {
+                using var context = _dbContextFactory.CreateDbContext();
+                var dilModel = await context.Dily.Where(x => x.VyrobekId == idVyrobek).ToListAsync();
+                if (dilModel == null)
+                    return false;
+
+                context.Dily.RemoveRange(dilModel);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ShowError("DeleteDilModelAsync", ex);
+                return false;
+            }
+        }
+
         #endregion
 
         #region VyrobekModel Operations
@@ -220,8 +240,8 @@ namespace Sprava_Vyrobku_a_Dilu.Services
                 {
                     return new List<VyrobekModel>();
                 }
-
-                return _mapper.Map<List<VyrobekModel>>(await context.Vyrobky.ToListAsync());
+                var data = await context.Vyrobky.Include(x => x.Dily).ToListAsync();
+                return data;
             }
             catch (Exception ex)
             {
@@ -252,7 +272,7 @@ namespace Sprava_Vyrobku_a_Dilu.Services
             }
         }
 
-        public async Task<bool> DeleteVyrobekModelAsync(int id)
+        public async Task<bool> DeleteVyrobekModelByIdAsync(int id)
         {
             try
             {

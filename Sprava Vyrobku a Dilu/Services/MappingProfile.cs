@@ -8,8 +8,7 @@ namespace Sprava_Vyrobku_a_Dilu.Services
     {
         public MappingProfile()
         {
-            CreateMap<VyrobekModel, VyrobekViewableModel>()
-                .ForMember(dest => dest.CountOfDily, opt => opt.MapFrom(src => src.Dily.Count));
+            CreateMap<VyrobekModel, VyrobekViewableModel>();
 
             CreateMap<VyrobekViewableModel, VyrobekModel>()
                 .ForMember(dest => dest.Dily, opt => opt.Ignore());

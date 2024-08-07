@@ -10,7 +10,7 @@ namespace Sprava_Vyrobku_a_Dilu.Services
         Task<bool> AnyDilyAsync();
         Task<bool> AnyVyrobkyAsync();
         Task<bool> DeleteDilModelAsync(int id);
-        Task<bool> DeleteVyrobekModelAsync(int id);
+        Task<bool> DeleteVyrobekModelByIdAsync(int id);
         Task<IEnumerable<DilModel>> GetAllDilyAsync();
         Task<List<VyrobekModel>> GetAllVyrobkyAsync();
         Task<int> GetCountOfDilyByVyrobekIdAsync(int vyrobekId);

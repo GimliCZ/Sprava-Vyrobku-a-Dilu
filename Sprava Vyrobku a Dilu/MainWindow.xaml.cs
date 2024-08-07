@@ -24,20 +24,30 @@ namespace Sprava_Vyrobku_a_Dilu
     public partial class MainWindow : Window
     {
         private readonly IDbService _dbService;
-        public ObservableDataModel ObservableDataModel { get; set; }
+        public ObservableDataProvider ObservableDataModel { get; set; }
         private readonly PridatDilWindow _pridatDilWindow;
         private readonly PridatVyrobekWindow _pridatVyrobekWindow;
+        private readonly UpravitVyrobek _upravitVyrobek;
         public MainWindow(IDbService dbService,
-            ObservableDataModel visibleDataModel,
+            ObservableDataProvider visibleDataModel,
             PridatVyrobekWindow pridatVyrobekWindow,
-            PridatDilWindow pridatDilWindow)
+            PridatDilWindow pridatDilWindow,
+            UpravitVyrobek upravitVyrobek)
         {
             _dbService = dbService;
             ObservableDataModel = visibleDataModel;
             _pridatDilWindow = pridatDilWindow;
             _pridatVyrobekWindow = pridatVyrobekWindow;
+            _upravitVyrobek = upravitVyrobek;
             InitializeComponent();
             DataContext = this;
+            ObservableDataModel.ViewableVyrobky.CollectionChanged += ViewableVyrobky_CollectionChanged;
+            UpdateDily();
+        }
+
+        private void ViewableVyrobky_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateDily();
         }
 
         public int Controlsize { get; set; } = 12;
@@ -261,20 +271,99 @@ namespace Sprava_Vyrobku_a_Dilu
 
         private void NovyDil_Click(object sender, RoutedEventArgs e)
         {
-            _pridatDilWindow.Show();
+            try
+            {
+                var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
+                if (data != null)
+                {
+                    _pridatDilWindow.PrepareAdd(data);
+                    _pridatDilWindow.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Vyberte výrobek pro přidání dílu.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception occured on NovyDil" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         private void OdstranitDil_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void NovyVyrobek_Click(object sender, RoutedEventArgs e)
         {
             _pridatVyrobekWindow.Show();
+            
         }
 
-        private void OdstranitVyrobek_Click(object sender, RoutedEventArgs e)
+        private async void OdstranitVyrobek_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
+                if (data != null)
+                {
+                    if(!await ObservableDataModel.RemoveVyrobek(data))
+                    {
+                        MessageBox.Show("Došlo k chybě při pokusu o odstranění výrobku.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Vyberte prvek k odstranění.");
+                }
+            }
+            catch (Exception ex) 
+            {
+                MessageBox.Show("Exception occured on OdstranitVyrobek" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+
+        }
+
+        public void UpdateDily()
+        {
+            var list = ObservableDataModel.ViewableVyrobky.SelectMany(x => x.Dily).ToList();
+            dataGridDily.ItemsSource = list;
+        }
+
+        private void dataGridVyrobky_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            UpdateVyrobku();
+        }
+
+        private void UpravitVyrobek_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateVyrobku();
+        }
+
+        private void UpdateVyrobku()
+        {
+            try
+            {
+                var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
+                if (data != null)
+                {
+                    _upravitVyrobek.PrepareEdit(data);
+                    _upravitVyrobek.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Vyberte prvek k úpravě.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception occured on UpravitVyrobek" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpravitDil_Click(object sender, RoutedEventArgs e)
         {
 
         }
