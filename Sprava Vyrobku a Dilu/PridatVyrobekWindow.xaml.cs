@@ -229,7 +229,7 @@ namespace SpravaVyrobkuaDilu
                 }
 
                 // Create new VyrobekModel
-                var newVyrobek = new VyrobekModel(nazevVyrobek, DecimalExtensions.RoundUp(cenaVyrobekVerif,4))
+                var newVyrobek = new VyrobekModel(nazevVyrobek, DecimalExtensions.RoundUp(cenaVyrobekVerif, 4))
                 {
                     Popis = popisVyrobek,
                     Poznamka = poznamkaVyrobek,
