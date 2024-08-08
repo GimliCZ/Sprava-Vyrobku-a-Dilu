@@ -26,11 +26,11 @@ namespace SpravaVyrobkuaDilu.Database
 
             modelBuilder.Entity<DilModel>()
                 .Property(d => d.Cena)
-                .HasPrecision(18, 2); // Precision: 18, Scale: 2
+                .HasPrecision(16, 4); // Precision: 18, Scale: 2
 
             modelBuilder.Entity<VyrobekModel>()
                 .Property(v => v.Cena)
-                .HasPrecision(18, 2); // Precision: 18, Scale: 2
+                .HasPrecision(16, 4); // Precision: 18, Scale: 2
 
             base.OnModelCreating(modelBuilder);
         }

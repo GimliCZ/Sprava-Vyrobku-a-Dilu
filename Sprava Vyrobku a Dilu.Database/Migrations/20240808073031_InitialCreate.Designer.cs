@@ -9,11 +9,11 @@ using SpravaVyrobkuaDilu.Database;
 
 #nullable disable
 
-namespace SpravaVyrobkuaDilu.Database.Migrations
+namespace Sprava_Vyrobku_a_Dilu.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240806065036_PrecisionFix")]
-    partial class PrecisionFix
+    [Migration("20240808073031_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace SpravaVyrobkuaDilu.Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Sprava_Vyrobku_a_Dilu.Database.Models.DilModel", b =>
+            modelBuilder.Entity("SpravaVyrobkuaDilu.Database.Models.DilModel", b =>
                 {
                     b.Property<int>("DilId")
                         .ValueGeneratedOnAdd()
@@ -34,8 +34,8 @@ namespace SpravaVyrobkuaDilu.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DilId"));
 
                     b.Property<decimal>("Cena")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(16, 4)
+                        .HasColumnType("decimal(16,4)");
 
                     b.Property<string>("Nazev")
                         .IsRequired()
@@ -57,10 +57,10 @@ namespace SpravaVyrobkuaDilu.Database.Migrations
 
                     b.HasIndex("VyrobekId");
 
-                    b.ToTable("DilModel");
+                    b.ToTable("DilModel", (string)null);
                 });
 
-            modelBuilder.Entity("Sprava_Vyrobku_a_Dilu.Database.Models.VyrobekModel", b =>
+            modelBuilder.Entity("SpravaVyrobkuaDilu.Database.Models.VyrobekModel", b =>
                 {
                     b.Property<int>("VyrobekId")
                         .ValueGeneratedOnAdd()
@@ -69,8 +69,8 @@ namespace SpravaVyrobkuaDilu.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VyrobekId"));
 
                     b.Property<decimal>("Cena")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(16, 4)
+                        .HasColumnType("decimal(16,4)");
 
                     b.Property<string>("Nazev")
                         .IsRequired()
@@ -90,12 +90,12 @@ namespace SpravaVyrobkuaDilu.Database.Migrations
 
                     b.HasKey("VyrobekId");
 
-                    b.ToTable("VyrobekModel");
+                    b.ToTable("VyrobekModel", (string)null);
                 });
 
-            modelBuilder.Entity("Sprava_Vyrobku_a_Dilu.Database.Models.DilModel", b =>
+            modelBuilder.Entity("SpravaVyrobkuaDilu.Database.Models.DilModel", b =>
                 {
-                    b.HasOne("Sprava_Vyrobku_a_Dilu.Database.Models.VyrobekModel", "Vyrobek")
+                    b.HasOne("SpravaVyrobkuaDilu.Database.Models.VyrobekModel", "Vyrobek")
                         .WithMany("Dily")
                         .HasForeignKey("VyrobekId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -104,7 +104,7 @@ namespace SpravaVyrobkuaDilu.Database.Migrations
                     b.Navigation("Vyrobek");
                 });
 
-            modelBuilder.Entity("Sprava_Vyrobku_a_Dilu.Database.Models.VyrobekModel", b =>
+            modelBuilder.Entity("SpravaVyrobkuaDilu.Database.Models.VyrobekModel", b =>
                 {
                     b.Navigation("Dily");
                 });

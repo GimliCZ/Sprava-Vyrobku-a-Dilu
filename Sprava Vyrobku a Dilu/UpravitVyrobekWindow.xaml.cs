@@ -14,12 +14,14 @@ namespace SpravaVyrobkuaDilu
     /// </summary>
     public partial class UpravitVyrobekWindow : Window
     {
-        private ObservableDataProvider _observableDataModel;
+        private ObservableDataProvider _observableDataProvider;
         public UpravitVyrobekWindow(ObservableDataProvider observableDataModel)
         {
             InitializeComponent();
-            _observableDataModel = observableDataModel;
+            _observableDataProvider = observableDataModel;
         }
+
+        public int EditedVyrobekId = 0;
 
         #region Vizual
 
@@ -28,20 +30,6 @@ namespace SpravaVyrobkuaDilu
             NumberDecimalSeparator = ".",
             NumberDecimalDigits = 4
         };
-        public int Controlsize { get; set; } = 12;
-
-        public int Controlsize2 { get; set; } = 9;
-
-        public int Controlsize3 { get; set; } = 18;
-
-        public int Heightfix { get; set; } = 130;
-
-        public int Heightfix2 { get; set; } = 400;
-
-        public int ImageHeightFix { get; set; } = 400;
-        public int ImageWeightFix { get; set; } = 710;
-
-        public int EditedId = 0;
 
         private void Exit_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -196,34 +184,11 @@ namespace SpravaVyrobkuaDilu
             {
                 Maximize_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/Maximize_default.png")));
             }
-
-            int rozsah_min = 12;//modifikace fontu
-            int rozsah_max = 14;
-            int rozsah_min2 = 10;
-            int rozsah_max2 = 14;
-            Controlsize = Convert.ToInt32(e.NewSize.Width - 800) * (rozsah_max - rozsah_min) / (1920 - 800) + rozsah_min;
-            Controlsize2 = Convert.ToInt32((e.NewSize.Width - 800) * (rozsah_max2 - rozsah_min2) / (1920 - 800) + rozsah_min2);
-            Controlsize3 = Controlsize2 * 2;
-            var heightfixtemp = Convert.ToInt32((e.NewSize.Height - 600) * (610 - 130) / (1080 - 600) + 130); //modifikace velikosti čítače naměřených hodnot
-            var imageHeightFix = Convert.ToInt32((e.NewSize.Height - 600) * (975 - 500) / (1080 - 600) + 500);
-            if (heightfixtemp <= 0)
-            {
-                Heightfix = 0;
-                ImageHeightFix = 0;
-                ImageWeightFix = 0;
-            }
-            else
-            {
-                ImageHeightFix = imageHeightFix;
-                ImageWeightFix = imageHeightFix * 16 / 9;
-                Heightfix = heightfixtemp;
-                Heightfix2 = heightfixtemp + 270;
-            }
         }
         #endregion
         public void PrepareEdit(VyrobekViewableModel model)
         {
-            EditedId = model.VyrobekId;
+            EditedVyrobekId = model.VyrobekId;
             NazevVyrobek.Text = model.Nazev;
             CenaVyrobek.Text = model.Cena.ToString(numberFormat);
             PopisVyrobek.Text = model.Popis;
@@ -232,7 +197,7 @@ namespace SpravaVyrobkuaDilu
 
         public void PostEdit()
         {
-            EditedId = 0;
+            EditedVyrobekId = 0;
             NazevVyrobek.Text = string.Empty;
             CenaVyrobek.Text = string.Empty;
             PopisVyrobek.Text = string.Empty;
@@ -271,15 +236,15 @@ namespace SpravaVyrobkuaDilu
                 }
 
                 // Create new VyrobekModel
-                var newVyrobek = new VyrobekModel(nazevVyrobek, cenaVyrobekVerif)
+                var newVyrobek = new VyrobekModel(nazevVyrobek, DecimalExtensions.RoundUp(cenaVyrobekVerif, 4))
                 {
-                    VyrobekId = EditedId,
+                    VyrobekId = EditedVyrobekId,
                     Popis = popisVyrobek,
                     Poznamka = poznamkaVyrobek,
                     Upraveno = DateTime.Now
                 };
 
-                if (!await _observableDataModel.UpdateVyrobek(newVyrobek))
+                if (!await _observableDataProvider.UpdateVyrobek(newVyrobek))
                 {
                     MessageBox.Show("Error occured during Update Vyrobek operation", "Error ", MessageBoxButton.OK, MessageBoxImage.Error);
                 }

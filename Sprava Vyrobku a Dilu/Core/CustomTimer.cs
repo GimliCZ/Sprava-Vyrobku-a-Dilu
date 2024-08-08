@@ -1,5 +1,8 @@
 ﻿namespace SpravaVyrobkuaDilu.Core;
 
+/// <summary>
+/// Modified timer for internal needs
+/// </summary>
 public class CustomTimer
 {
     /// <summary>

@@ -18,27 +18,27 @@ namespace SpravaVyrobkuaDilu
     public partial class MainWindow : Window
     {
         private readonly IDbService _dbService;
-        public ObservableDataProvider ObservableDataModel { get; set; }
+        public ObservableDataProvider ObservableDataProvider { get; set; }
         private readonly PridatDilWindow _pridatDilWindow;
         private readonly PridatVyrobekWindow _pridatVyrobekWindow;
         private readonly UpravitVyrobekWindow _upravitVyrobekWindow;
         private readonly UpravitDilWindow _upravitDilWindow;
         public MainWindow(IDbService dbService,
-            ObservableDataProvider visibleDataModel,
+            ObservableDataProvider observableDataProvider,
             PridatVyrobekWindow pridatVyrobekWindow,
             PridatDilWindow pridatDilWindow,
             UpravitVyrobekWindow upravitVyrobek,
             UpravitDilWindow upravitDilWindow)
         {
             _dbService = dbService;
-            ObservableDataModel = visibleDataModel;
+            ObservableDataProvider = observableDataProvider;
             _pridatDilWindow = pridatDilWindow;
             _pridatVyrobekWindow = pridatVyrobekWindow;
             _upravitVyrobekWindow = upravitVyrobek;
             _upravitDilWindow = upravitDilWindow;
             InitializeComponent();
             DataContext = this;
-            ObservableDataModel.ViewableVyrobky.CollectionChanged += ViewableVyrobky_CollectionChanged;
+            ObservableDataProvider.ViewableVyrobky.CollectionChanged += ViewableVyrobky_CollectionChanged;
             UpdateDily();
         }
 
@@ -46,22 +46,6 @@ namespace SpravaVyrobkuaDilu
         {
             UpdateDily();
         }
-
-        public int Controlsize { get; set; } = 12;
-
-        public int Controlsize2 { get; set; } = 9;
-
-        public int Controlsize3 { get; set; } = 18;
-
-        public int Heightfix { get; set; } = 130;
-
-        public int Heightfix2 { get; set; } = 400;
-
-        public int ImageHeightFix { get; set; } = 400;
-        public int ImageWeightFix { get; set; } = 710;
-
-
-
 
         private void Exit_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -220,36 +204,13 @@ namespace SpravaVyrobkuaDilu
             {
                 Maximize_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/Maximize_default.png")));
             }
-
-            int rozsah_min = 12;//modifikace fontu
-            int rozsah_max = 14;
-            int rozsah_min2 = 10;
-            int rozsah_max2 = 14;
-            Controlsize = Convert.ToInt32(e.NewSize.Width - 800) * (rozsah_max - rozsah_min) / (1920 - 800) + rozsah_min;
-            Controlsize2 = Convert.ToInt32((e.NewSize.Width - 800) * (rozsah_max2 - rozsah_min2) / (1920 - 800) + rozsah_min2);
-            Controlsize3 = Controlsize2 * 2;
-            var heightfixtemp = Convert.ToInt32((e.NewSize.Height - 600) * (610 - 130) / (1080 - 600) + 130); //modifikace velikosti čítače naměřených hodnot
-            var imageHeightFix = Convert.ToInt32((e.NewSize.Height - 600) * (975 - 500) / (1080 - 600) + 500);
-            if (heightfixtemp <= 0)
-            {
-                Heightfix = 0;
-                ImageHeightFix = 0;
-                ImageWeightFix = 0;
-            }
-            else
-            {
-                ImageHeightFix = imageHeightFix;
-                ImageWeightFix = imageHeightFix * 16 / 9;
-                Heightfix = heightfixtemp;
-                Heightfix2 = heightfixtemp + 270;
-            }
         }
 
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                await ObservableDataModel.Refresh();
+                await ObservableDataProvider.Refresh();
             }
             catch (Exception ex)
             {
@@ -306,7 +267,7 @@ namespace SpravaVyrobkuaDilu
                 var data = dataGridDily.SelectedItem as DilModel;
                 if (data != null && data is DilModel)
                 {
-                    await ObservableDataModel.RemoveDil(data);
+                    await ObservableDataProvider.RemoveDil(data);
                     return;
                 }
 
@@ -317,7 +278,7 @@ namespace SpravaVyrobkuaDilu
                         var innterData = datagrid.SelectedItem as DilModel;
                         if (innterData != null && innterData is DilModel)
                         {
-                            await ObservableDataModel.RemoveDil(innterData);
+                            await ObservableDataProvider.RemoveDil(innterData);
                             return;
                         }
                     }
@@ -345,7 +306,7 @@ namespace SpravaVyrobkuaDilu
                 var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
                 if (data != null)
                 {
-                    if (!await ObservableDataModel.RemoveVyrobek(data))
+                    if (!await ObservableDataProvider.RemoveVyrobek(data))
                     {
                         MessageBox.Show("Došlo k chybě při pokusu o odstranění výrobku.");
                     }
@@ -365,7 +326,7 @@ namespace SpravaVyrobkuaDilu
 
         public void UpdateDily()
         {
-            var list = ObservableDataModel.ViewableVyrobky.SelectMany(x => x.Dily).ToList();
+            var list = ObservableDataProvider.ViewableVyrobky.SelectMany(x => x.Dily).ToList();
             dataGridDily.ItemsSource = list;
         }
 
@@ -455,7 +416,7 @@ namespace SpravaVyrobkuaDilu
             var data = dataGridDily.SelectedItem as DilModel;
             if (data != null && data is DilModel)
             {
-                var vyrobekToSelect = ObservableDataModel.ViewableVyrobky.Where(x => x.VyrobekId == data.VyrobekId).SingleOrDefault();
+                var vyrobekToSelect = ObservableDataProvider.ViewableVyrobky.Where(x => x.VyrobekId == data.VyrobekId).SingleOrDefault();
                 if (vyrobekToSelect != null)
                 {
                     // Get the ItemsSource of dataGridVyrobky

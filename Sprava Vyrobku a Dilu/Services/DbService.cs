@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SpravaVyrobkuaDilu.Database;
 using SpravaVyrobkuaDilu.Database.Models;
@@ -9,15 +8,12 @@ namespace SpravaVyrobkuaDilu.Services
     public class DbService : IDbService
     {
         private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
-        private readonly IMapper _mapper;
 
-        public DbService(IDbContextFactory<AppDbContext> dbContextFactory,
-            IMapper mapper)
+        public DbService(IDbContextFactory<AppDbContext> dbContextFactory)
         {
             _dbContextFactory = dbContextFactory;
-            _mapper = mapper;
         }
-
+        /// <inheritdoc/>
         public async Task<bool> AddVyrobekWithDilyAsync(VyrobekModel vyrobekModel, IEnumerable<DilModel> dilModels)
         {
             ArgumentNullException.ThrowIfNull(vyrobekModel);
@@ -49,7 +45,7 @@ namespace SpravaVyrobkuaDilu.Services
         }
 
         #region DilModel Operations
-
+        /// <inheritdoc/>
         public async Task<bool> AnyDilyAsync()
         {
             try
@@ -63,7 +59,7 @@ namespace SpravaVyrobkuaDilu.Services
                 return false;
             }
         }
-
+        /// <inheritdoc/>
         public async Task<bool> AddDilModelAsync(DilModel dilModel)
         {
             ArgumentNullException.ThrowIfNull(dilModel);
@@ -81,23 +77,7 @@ namespace SpravaVyrobkuaDilu.Services
                 return false;
             }
         }
-
-        public async Task<DilModel?> GetDilModelByIdAsync(int id)
-        {
-            try
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-                return await context.Dily
-                    .Include(d => d.Vyrobek) // Include related VyrobekModel
-                    .FirstOrDefaultAsync(d => d.DilId == id);
-            }
-            catch (Exception ex)
-            {
-                ShowError("GetDilModelByIdAsync", ex);
-                return null;
-            }
-        }
-
+        /// <inheritdoc/>
         public async Task<IEnumerable<DilModel>> GetAllDilyAsync()
         {
             try
@@ -116,7 +96,7 @@ namespace SpravaVyrobkuaDilu.Services
                 return Enumerable.Empty<DilModel>();
             }
         }
-
+        /// <inheritdoc/>
         public async Task<bool> UpdateDilModelAsync(DilModel dilModel)
         {
             ArgumentNullException.ThrowIfNull(dilModel);
@@ -138,7 +118,7 @@ namespace SpravaVyrobkuaDilu.Services
                 return false;
             }
         }
-
+        /// <inheritdoc/>
         public async Task<bool> DeleteDilModelAsync(int id)
         {
             try
@@ -159,30 +139,10 @@ namespace SpravaVyrobkuaDilu.Services
             }
         }
 
-        public async Task<bool> DeleteDilByVyrobekModelAsync(int idVyrobek)
-        {
-            try
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-                var dilModel = await context.Dily.Where(x => x.VyrobekId == idVyrobek).ToListAsync();
-                if (dilModel == null)
-                    return false;
-
-                context.Dily.RemoveRange(dilModel);
-                await context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ShowError("DeleteDilModelAsync", ex);
-                return false;
-            }
-        }
-
         #endregion
 
         #region VyrobekModel Operations
-
+        /// <inheritdoc/>
         public async Task<bool> AnyVyrobkyAsync()
         {
             try
@@ -196,41 +156,7 @@ namespace SpravaVyrobkuaDilu.Services
                 return false;
             }
         }
-
-        public async Task<bool> AddVyrobekModelAsync(VyrobekModel vyrobekModel)
-        {
-            ArgumentNullException.ThrowIfNull(vyrobekModel);
-
-            try
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-                context.Vyrobky.Add(vyrobekModel);
-                var changes = await context.SaveChangesAsync();
-                return changes > 0;
-            }
-            catch (Exception ex)
-            {
-                ShowError("AddVyrobekModelAsync", ex);
-                return false;
-            }
-        }
-
-        public async Task<VyrobekModel?> GetVyrobekModelByIdAsync(int id)
-        {
-            try
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-                return await context.Vyrobky
-                    .Include(v => v.Dily) // Include related DilModel
-                    .FirstOrDefaultAsync(v => v.VyrobekId == id);
-            }
-            catch (Exception ex)
-            {
-                ShowError("GetVyrobekModelByIdAsync", ex);
-                return null;
-            }
-        }
-
+        /// <inheritdoc/>
         public async Task<List<VyrobekModel>> GetAllVyrobkyAsync()
         {
             try
@@ -249,7 +175,7 @@ namespace SpravaVyrobkuaDilu.Services
                 return new List<VyrobekModel>();
             }
         }
-
+        /// <inheritdoc/>
         public async Task<bool> UpdateVyrobekModelAsync(VyrobekModel vyrobekModel)
         {
             ArgumentNullException.ThrowIfNull(vyrobekModel);
@@ -271,7 +197,7 @@ namespace SpravaVyrobkuaDilu.Services
                 return false;
             }
         }
-
+        /// <inheritdoc/>
         public async Task<bool> DeleteVyrobekModelByIdAsync(int id)
         {
             try
@@ -292,25 +218,11 @@ namespace SpravaVyrobkuaDilu.Services
             }
         }
 
-        public async Task<int> GetCountOfDilyByVyrobekIdAsync(int vyrobekId)
-        {
-            try
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-                return await context.Dily.CountAsync(d => d.VyrobekId == vyrobekId);
-            }
-            catch (Exception ex)
-            {
-                ShowError("GetCountOfDilyByVyrobekIdAsync", ex);
-                return 0;
-            }
-        }
-
         #endregion
-
-        private void ShowError(string methodName, Exception ex)
+        /// <inheritdoc/>
+        private static void ShowError(string methodName, Exception ex)
         {
-            MessageBox.Show($"Exception occurred in {methodName}: {ex.Message},{ex?.InnerException?.Message} \n{ex.StackTrace}",
+            MessageBox.Show($"Exception occurred in {methodName}: {ex.Message},{ex?.InnerException?.Message} \n{ex?.StackTrace}",
                 "Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

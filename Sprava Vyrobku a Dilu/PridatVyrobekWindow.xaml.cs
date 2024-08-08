@@ -10,14 +10,14 @@ using SpravaVyrobkuaDilu.Models;
 namespace SpravaVyrobkuaDilu
 {
     /// <summary>
-    /// Interakční logika pro PridatDilWindow.xaml
+    /// Interakční logika pro PridatVyrobekWindow.xaml
     /// </summary>
     public partial class PridatVyrobekWindow : Window
     {
-        private ObservableDataProvider _observableDataModel;
-        public PridatVyrobekWindow(ObservableDataProvider observableDataModel)
+        private ObservableDataProvider _observableDataProvider;
+        public PridatVyrobekWindow(ObservableDataProvider observableDataProvider)
         {
-            _observableDataModel = observableDataModel;
+            _observableDataProvider = observableDataProvider;
             InitializeComponent();
         }
 
@@ -28,18 +28,6 @@ namespace SpravaVyrobkuaDilu
             NumberDecimalSeparator = ".",
             NumberDecimalDigits = 4
         };
-        public int Controlsize { get; set; } = 12;
-
-        public int Controlsize2 { get; set; } = 9;
-
-        public int Controlsize3 { get; set; } = 18;
-
-        public int Heightfix { get; set; } = 130;
-
-        public int Heightfix2 { get; set; } = 400;
-
-        public int ImageHeightFix { get; set; } = 400;
-        public int ImageWeightFix { get; set; } = 710;
 
         private void Exit_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -194,29 +182,6 @@ namespace SpravaVyrobkuaDilu
             {
                 Maximize_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/Maximize_default.png")));
             }
-
-            int rozsah_min = 12;//modifikace fontu
-            int rozsah_max = 14;
-            int rozsah_min2 = 10;
-            int rozsah_max2 = 14;
-            Controlsize = Convert.ToInt32(e.NewSize.Width - 800) * (rozsah_max - rozsah_min) / (1920 - 800) + rozsah_min;
-            Controlsize2 = Convert.ToInt32((e.NewSize.Width - 800) * (rozsah_max2 - rozsah_min2) / (1920 - 800) + rozsah_min2);
-            Controlsize3 = Controlsize2 * 2;
-            var heightfixtemp = Convert.ToInt32((e.NewSize.Height - 600) * (610 - 130) / (1080 - 600) + 130); //modifikace velikosti čítače naměřených hodnot
-            var imageHeightFix = Convert.ToInt32((e.NewSize.Height - 600) * (975 - 500) / (1080 - 600) + 500);
-            if (heightfixtemp <= 0)
-            {
-                Heightfix = 0;
-                ImageHeightFix = 0;
-                ImageWeightFix = 0;
-            }
-            else
-            {
-                ImageHeightFix = imageHeightFix;
-                ImageWeightFix = imageHeightFix * 16 / 9;
-                Heightfix = heightfixtemp;
-                Heightfix2 = heightfixtemp + 270;
-            }
         }
         #endregion
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -237,7 +202,7 @@ namespace SpravaVyrobkuaDilu
                 }
 
                 // Check for duplicate name
-                if (_observableDataModel.IsPresent(nazevVyrobek))
+                if (_observableDataProvider.IsPresent(nazevVyrobek))
                 {
                     var result = MessageBox.Show("A Vyrobek with this name already exists. Do you want to add it anyway?",
                                                  "Duplicate Found",
@@ -264,20 +229,20 @@ namespace SpravaVyrobkuaDilu
                 }
 
                 // Create new VyrobekModel
-                var newVyrobek = new VyrobekModel(nazevVyrobek, cenaVyrobekVerif)
+                var newVyrobek = new VyrobekModel(nazevVyrobek, DecimalExtensions.RoundUp(cenaVyrobekVerif,4))
                 {
                     Popis = popisVyrobek,
                     Poznamka = poznamkaVyrobek,
                     Upraveno = DateTime.Now
                 };
-                var NewDil = new DilModel(nazevVyrobek, cenaVyrobekVerif, newVyrobek.VyrobekId)
+                var NewDil = new DilModel(nazevVyrobek, DecimalExtensions.RoundUp(cenaVyrobekVerif, 4), newVyrobek.VyrobekId)
                 {
                     Popis = popisVyrobek,
                     Upraveno = DateTime.Now
                 };
                 var listDil = new List<DilModel>() { NewDil };
 
-                if (!await _observableDataModel.AddVyrobekAndDily(newVyrobek, listDil))
+                if (!await _observableDataProvider.AddVyrobekAndDily(newVyrobek, listDil))
                 {
                     MessageBox.Show("Error occured during Add Vyrobek And Dily operation", "Error ", MessageBoxButton.OK, MessageBoxImage.Error);
                 }

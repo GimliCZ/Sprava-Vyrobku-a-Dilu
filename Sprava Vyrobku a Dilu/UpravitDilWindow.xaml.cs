@@ -14,10 +14,10 @@ namespace SpravaVyrobkuaDilu
     /// </summary>
     public partial class UpravitDilWindow : Window
     {
-        private ObservableDataProvider _observableDataModel;
+        private ObservableDataProvider _observableDataProvider;
         public UpravitDilWindow(ObservableDataProvider observableDataProvider)
         {
-            _observableDataModel = observableDataProvider;
+            _observableDataProvider = observableDataProvider;
             InitializeComponent();
 
         }
@@ -32,19 +32,6 @@ namespace SpravaVyrobkuaDilu
             NumberDecimalSeparator = ".",
             NumberDecimalDigits = 4
         };
-
-        public int Controlsize { get; set; } = 12;
-
-        public int Controlsize2 { get; set; } = 9;
-
-        public int Controlsize3 { get; set; } = 18;
-
-        public int Heightfix { get; set; } = 130;
-
-        public int Heightfix2 { get; set; } = 400;
-
-        public int ImageHeightFix { get; set; } = 400;
-        public int ImageWeightFix { get; set; } = 710;
 
         private void Exit_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -199,29 +186,6 @@ namespace SpravaVyrobkuaDilu
             {
                 Maximize_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/Maximize_default.png")));
             }
-
-            int rozsah_min = 12;//modifikace fontu
-            int rozsah_max = 14;
-            int rozsah_min2 = 10;
-            int rozsah_max2 = 14;
-            Controlsize = Convert.ToInt32(e.NewSize.Width - 800) * (rozsah_max - rozsah_min) / (1920 - 800) + rozsah_min;
-            Controlsize2 = Convert.ToInt32((e.NewSize.Width - 800) * (rozsah_max2 - rozsah_min2) / (1920 - 800) + rozsah_min2);
-            Controlsize3 = Controlsize2 * 2;
-            var heightfixtemp = Convert.ToInt32((e.NewSize.Height - 600) * (610 - 130) / (1080 - 600) + 130); //modifikace velikosti čítače naměřených hodnot
-            var imageHeightFix = Convert.ToInt32((e.NewSize.Height - 600) * (975 - 500) / (1080 - 600) + 500);
-            if (heightfixtemp <= 0)
-            {
-                Heightfix = 0;
-                ImageHeightFix = 0;
-                ImageWeightFix = 0;
-            }
-            else
-            {
-                ImageHeightFix = imageHeightFix;
-                ImageWeightFix = imageHeightFix * 16 / 9;
-                Heightfix = heightfixtemp;
-                Heightfix2 = heightfixtemp + 270;
-            }
         }
         #endregion
 
@@ -273,14 +237,14 @@ namespace SpravaVyrobkuaDilu
                 }
 
                 // Create new NewDil
-                var NewDil = new DilModel(nazevVyrobek, cenaVyrobekVerif, EditedVyrobekId)
+                var NewDil = new DilModel(nazevVyrobek, DecimalExtensions.RoundUp(cenaVyrobekVerif, 4), EditedVyrobekId)
                 {
                     Popis = popisVyrobek,
                     Upraveno = DateTime.Now,
                     DilId = EditedDilId
                 };
 
-                if (!await _observableDataModel.UpdateDil(NewDil))
+                if (!await _observableDataProvider.UpdateDil(NewDil))
                 {
                     MessageBox.Show("Error occured during Update Dil operation", "Error ", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
