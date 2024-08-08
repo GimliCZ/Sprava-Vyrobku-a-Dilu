@@ -38,12 +38,6 @@ namespace SpravaVyrobkuaDilu.Services
         Task<bool> DeleteVyrobekModelByIdAsync(int id);
 
         /// <summary>
-        /// Asynchronously retrieves all dil from the database.
-        /// </summary>
-        /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="IEnumerable{DilModel}"/> of all dil.</returns>
-        Task<IEnumerable<DilModel>> GetAllDilyAsync();
-
-        /// <summary>
         /// Asynchronously retrieves all vyrobky from the database.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="List{VyrobekModel}"/> of all vyrobky.</returns>

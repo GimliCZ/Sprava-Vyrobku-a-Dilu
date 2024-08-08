@@ -1,0 +1,3 @@
+ - There is random bug with visual, where after adding data it does not contain decimal point values until refresh, no Idea how to fix it
+ - There is posible optimalization for dbservice. More about -> Hack
+ - There is tone of dupe code in xaml and windows relaited classes, no idea how to get rid of it. 

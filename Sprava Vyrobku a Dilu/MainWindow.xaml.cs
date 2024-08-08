@@ -7,7 +7,6 @@ using PropertyChanged;
 using SpravaVyrobkuaDilu.Core;
 using SpravaVyrobkuaDilu.Database.Models;
 using SpravaVyrobkuaDilu.Models;
-using SpravaVyrobkuaDilu.Services;
 
 namespace SpravaVyrobkuaDilu
 {
@@ -17,20 +16,17 @@ namespace SpravaVyrobkuaDilu
     [AddINotifyPropertyChangedInterface]
     public partial class MainWindow : Window
     {
-        private readonly IDbService _dbService;
         public ObservableDataProvider ObservableDataProvider { get; set; }
         private readonly PridatDilWindow _pridatDilWindow;
         private readonly PridatVyrobekWindow _pridatVyrobekWindow;
         private readonly UpravitVyrobekWindow _upravitVyrobekWindow;
         private readonly UpravitDilWindow _upravitDilWindow;
-        public MainWindow(IDbService dbService,
-            ObservableDataProvider observableDataProvider,
+        public MainWindow(ObservableDataProvider observableDataProvider,
             PridatVyrobekWindow pridatVyrobekWindow,
             PridatDilWindow pridatDilWindow,
             UpravitVyrobekWindow upravitVyrobek,
             UpravitDilWindow upravitDilWindow)
         {
-            _dbService = dbService;
             ObservableDataProvider = observableDataProvider;
             _pridatDilWindow = pridatDilWindow;
             _pridatVyrobekWindow = pridatVyrobekWindow;
@@ -107,7 +103,7 @@ namespace SpravaVyrobkuaDilu
                 Maximize_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/ReturnMaximize_pressed.png")));
             }
         }
-        CustomTimer customTimer = new CustomTimer();
+        readonly CustomTimer customTimer = new();
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var currentstate = WindowState;
@@ -230,7 +226,11 @@ namespace SpravaVyrobkuaDilu
 
         private void Close_app(object sender, RoutedEventArgs e)
         {
-
+            _pridatDilWindow.Close();
+            _pridatVyrobekWindow.Close();
+            _upravitVyrobekWindow.Close();
+            _upravitDilWindow.Close();
+            Close();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -242,8 +242,7 @@ namespace SpravaVyrobkuaDilu
         {
             try
             {
-                var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
-                if (data != null)
+                if (dataGridVyrobky.SelectedItem is (VyrobekViewableModel data and not null))
                 {
                     _pridatDilWindow.PrepareAdd(data);
                     _pridatDilWindow.Show();
@@ -265,7 +264,7 @@ namespace SpravaVyrobkuaDilu
             try
             {
                 var data = dataGridDily.SelectedItem as DilModel;
-                if (data != null && data is DilModel)
+                if (data is (not null and DilModel))
                 {
                     await ObservableDataProvider.RemoveDil(data);
                     return;
@@ -276,7 +275,7 @@ namespace SpravaVyrobkuaDilu
                     if (datagrid.Name == "InnerGrid")
                     {
                         var innterData = datagrid.SelectedItem as DilModel;
-                        if (innterData != null && innterData is DilModel)
+                        if (innterData is (not null and DilModel))
                         {
                             await ObservableDataProvider.RemoveDil(innterData);
                             return;
@@ -303,8 +302,7 @@ namespace SpravaVyrobkuaDilu
         {
             try
             {
-                var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
-                if (data != null)
+                if (dataGridVyrobky.SelectedItem is (VyrobekViewableModel data and not null))
                 {
                     if (!await ObservableDataProvider.RemoveVyrobek(data))
                     {
@@ -339,8 +337,7 @@ namespace SpravaVyrobkuaDilu
         {
             try
             {
-                var data = dataGridVyrobky.SelectedItem as VyrobekViewableModel;
-                if (data != null)
+                if (dataGridVyrobky.SelectedItem is (VyrobekViewableModel data and not null))
                 {
                     _upravitVyrobekWindow.PrepareEdit(data);
                     _upravitVyrobekWindow.Show();
@@ -361,7 +358,7 @@ namespace SpravaVyrobkuaDilu
             try
             {
                 var data = dataGridDily.SelectedItem as DilModel;
-                if (data != null && data is DilModel)
+                if (data is (not null and DilModel))
                 {
                     _upravitDilWindow.PrepareEdit(data);
                     _upravitDilWindow.Show();
@@ -373,7 +370,7 @@ namespace SpravaVyrobkuaDilu
                     if (datagrid.Name == "InnerGrid")
                     {
                         var innterData = datagrid.SelectedItem as DilModel;
-                        if (innterData != null && innterData is DilModel)
+                        if (innterData is (not null and DilModel))
                         {
                             _upravitDilWindow.PrepareEdit(innterData);
                             _upravitDilWindow.Show();
@@ -403,7 +400,7 @@ namespace SpravaVyrobkuaDilu
                         continue;
                     }
 
-                    if (child is T) yield return (T)child;
+                    if (child is T t) yield return t;
 
                     foreach (T childOfChild in FindVisualChildren<T>(child))
                         yield return childOfChild;
@@ -411,18 +408,17 @@ namespace SpravaVyrobkuaDilu
             }
         }
 
-        private void dataGridDily_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void DataGridDily_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var data = dataGridDily.SelectedItem as DilModel;
-            if (data != null && data is DilModel)
+            if (data is (not null and DilModel))
             {
                 var vyrobekToSelect = ObservableDataProvider.ViewableVyrobky.Where(x => x.VyrobekId == data.VyrobekId).SingleOrDefault();
                 if (vyrobekToSelect != null)
                 {
                     // Get the ItemsSource of dataGridVyrobky
-                    var itemsSource = dataGridVyrobky.ItemsSource as IList<VyrobekViewableModel>;
 
-                    if (itemsSource != null)
+                    if (dataGridVyrobky.ItemsSource is (IList<VyrobekViewableModel> itemsSource and not null))
                     {
                         // Find the index of the item to select
                         var index = itemsSource.IndexOf(vyrobekToSelect);

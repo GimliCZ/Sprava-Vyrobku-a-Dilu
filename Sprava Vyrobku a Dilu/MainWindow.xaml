@@ -163,7 +163,7 @@
            VerticalScrollBarVisibility="Auto"
            SelectionMode="Single"
            ScrollViewer.CanContentScroll="True" 
-           MouseDoubleClick="dataGridDily_MouseDoubleClick">
+           MouseDoubleClick="DataGridDily_MouseDoubleClick">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Název" Binding="{Binding Nazev}" Width="*"/>
                             <DataGridTextColumn Header="Cena" Binding="{Binding Cena}" Width="*"/>

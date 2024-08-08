@@ -79,7 +79,7 @@ namespace SpravaVyrobkuaDilu.Models
 
             var vyrobekToUpgrade = ViewableVyrobky.Where(p => p.VyrobekId == vyrobek.VyrobekId).SingleOrDefault();
 
-            if (vyrobekToUpgrade != null && vyrobekToUpgrade is VyrobekViewableModel)
+            if (vyrobekToUpgrade is not null and VyrobekViewableModel)
             {
                 if (await _dbService.UpdateVyrobekModelAsync(vyrobek))
                 {
@@ -186,7 +186,6 @@ namespace SpravaVyrobkuaDilu.Models
         public async Task Refresh()
         {
             var vyrobky = await _dbService.GetAllVyrobkyAsync();
-            var dily = await _dbService.GetAllDilyAsync();
             ViewableVyrobky.Clear();
 
             foreach (var vyrobekModel in vyrobky)

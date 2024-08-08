@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using Sprava_Vyrobku_a_Dilu.Extensions;
 using SpravaVyrobkuaDilu.Core;
 using SpravaVyrobkuaDilu.Database.Models;
 using SpravaVyrobkuaDilu.Models;
@@ -14,7 +15,7 @@ namespace SpravaVyrobkuaDilu
     /// </summary>
     public partial class PridatVyrobekWindow : Window
     {
-        private ObservableDataProvider _observableDataProvider;
+        private readonly ObservableDataProvider _observableDataProvider;
         public PridatVyrobekWindow(ObservableDataProvider observableDataProvider)
         {
             _observableDataProvider = observableDataProvider;
@@ -23,7 +24,7 @@ namespace SpravaVyrobkuaDilu
 
         #region Vizual
 
-        private NumberFormatInfo numberFormat = new()
+        private readonly NumberFormatInfo numberFormat = new()
         {
             NumberDecimalSeparator = ".",
             NumberDecimalDigits = 4
@@ -85,7 +86,7 @@ namespace SpravaVyrobkuaDilu
                 Maximize_button.Source = new BitmapImage(new Uri(("pack://application:,,,/img/ReturnMaximize_pressed.png")));
             }
         }
-        CustomTimer customTimer = new CustomTimer();
+        readonly CustomTimer customTimer = new();
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var currentstate = WindowState;
@@ -214,13 +215,6 @@ namespace SpravaVyrobkuaDilu
                     }
                 }
 
-
-                // Create a custom NumberFormatInfo with dot as the decimal separator
-                var numberFormat = new NumberFormatInfo
-                {
-                    NumberDecimalSeparator = "."
-                };
-
                 // Parse the decimal using the custom NumberFormatInfo
                 if (!decimal.TryParse(cenaVyrobek, NumberStyles.Number, numberFormat, out var cenaVyrobekVerif))
                 {
@@ -257,10 +251,16 @@ namespace SpravaVyrobkuaDilu
         }
         private void CenaVyrobek_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (CenaVyrobek.Text.Contains(","))
+            if (CenaVyrobek.Text.Contains(','))
             {
-                CenaVyrobek.Text = CenaVyrobek.Text.Replace(",", ".");
+                CenaVyrobek.Text = CenaVyrobek.Text.Replace(',', '.');
             }
+            if (CenaVyrobek.Text.Length > 7 && CenaVyrobek.Text[7] != '.' && !CenaVyrobek.Text.Substring(0, 7).Contains('.'))
+            {
+                CenaVyrobek.Text = CenaVyrobek.Text.ReplaceAt('.', 7);
+                CenaVyrobek.CaretIndex = 8;
+            }
+            CenaVyrobek.Text = CenaVyrobek.Text.Replace("..", ".0");
         }
     }
 }

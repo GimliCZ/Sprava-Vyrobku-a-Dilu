@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using Sprava_Vyrobku_a_Dilu.Extensions;
 using SpravaVyrobkuaDilu.Core;
 using SpravaVyrobkuaDilu.Database.Models;
 using SpravaVyrobkuaDilu.Models;
@@ -258,10 +259,16 @@ namespace SpravaVyrobkuaDilu
 
         private void CenaVyrobek_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (CenaVyrobek.Text.Contains(","))
+            if (CenaVyrobek.Text.Contains(','))
             {
-                CenaVyrobek.Text = CenaVyrobek.Text.Replace(",", ".");
+                CenaVyrobek.Text = CenaVyrobek.Text.Replace(',', '.');
             }
+            if (CenaVyrobek.Text.Length > 7 && CenaVyrobek.Text[7] != '.' && !CenaVyrobek.Text.Substring(0, 7).Contains('.'))
+            {
+                CenaVyrobek.Text = CenaVyrobek.Text.ReplaceAt('.', 7);
+                CenaVyrobek.CaretIndex = 8;
+            }
+            CenaVyrobek.Text = CenaVyrobek.Text.Replace("..", ".0");
         }
     }
 }

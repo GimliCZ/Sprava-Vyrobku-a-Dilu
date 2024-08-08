@@ -78,25 +78,6 @@ namespace SpravaVyrobkuaDilu.Services
             }
         }
         /// <inheritdoc/>
-        public async Task<IEnumerable<DilModel>> GetAllDilyAsync()
-        {
-            try
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-                if (!await AnyDilyAsync())
-                {
-                    return Enumerable.Empty<DilModel>();
-                }
-
-                return await context.Dily.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                ShowError("GetAllDilyAsync", ex);
-                return Enumerable.Empty<DilModel>();
-            }
-        }
-        /// <inheritdoc/>
         public async Task<bool> UpdateDilModelAsync(DilModel dilModel)
         {
             ArgumentNullException.ThrowIfNull(dilModel);
