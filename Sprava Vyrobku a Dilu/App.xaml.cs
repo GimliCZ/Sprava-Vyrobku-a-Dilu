@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SpravaVyrobkuaDilu.Interfaces;
 using SpravaVyrobkuaDilu.Database;
 using SpravaVyrobkuaDilu.Models;
 using SpravaVyrobkuaDilu.Services;
@@ -37,7 +38,7 @@ namespace SpravaVyrobkuaDilu
                     services.AddTransient<UpravitVyrobekWindow>();
                     services.AddTransient<UpravitDilWindow>();
                     services.AddSingleton<MainWindow>();
-                    //telemetry etc. 
+                    //telemetry, logging etc. 
                 })
                 .Build();
         }

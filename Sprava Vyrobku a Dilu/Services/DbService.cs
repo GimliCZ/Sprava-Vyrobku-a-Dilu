@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using SpravaVyrobkuaDilu.Interfaces;
 using SpravaVyrobkuaDilu.Database;
 using SpravaVyrobkuaDilu.Database.Models;
 

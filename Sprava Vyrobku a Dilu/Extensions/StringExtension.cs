@@ -1,4 +1,4 @@
-﻿namespace Sprava_Vyrobku_a_Dilu.Extensions
+﻿namespace SpravaVyrobkuaDilu.Extensions
 {
     public static class StringExtension
     {

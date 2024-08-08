@@ -8,7 +8,7 @@ using SpravaVyrobkuaDilu.Database;
 
 #nullable disable
 
-namespace Sprava_Vyrobku_a_Dilu.Database.Migrations
+namespace SpravaVyrobkuaDilu.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot

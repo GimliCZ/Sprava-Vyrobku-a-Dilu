@@ -9,7 +9,7 @@ using SpravaVyrobkuaDilu.Database;
 
 #nullable disable
 
-namespace Sprava_Vyrobku_a_Dilu.Database.Migrations
+namespace SpravaVyrobkuaDilu.Database.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20240808073031_InitialCreate")]

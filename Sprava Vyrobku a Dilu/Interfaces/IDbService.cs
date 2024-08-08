@@ -1,6 +1,6 @@
 ﻿using SpravaVyrobkuaDilu.Database.Models;
 
-namespace SpravaVyrobkuaDilu.Services
+namespace SpravaVyrobkuaDilu.Interfaces
 {
     public interface IDbService
     {

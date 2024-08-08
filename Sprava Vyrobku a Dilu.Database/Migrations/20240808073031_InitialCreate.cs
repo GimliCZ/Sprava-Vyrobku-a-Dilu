@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Sprava_Vyrobku_a_Dilu.Database.Migrations
+namespace SpravaVyrobkuaDilu.Database.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

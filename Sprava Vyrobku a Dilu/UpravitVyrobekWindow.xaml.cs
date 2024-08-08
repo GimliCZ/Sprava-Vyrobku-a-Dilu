@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using Sprava_Vyrobku_a_Dilu.Extensions;
+using SpravaVyrobkuaDilu.Extensions;
 using SpravaVyrobkuaDilu.Core;
 using SpravaVyrobkuaDilu.Database.Models;
 using SpravaVyrobkuaDilu.Models;

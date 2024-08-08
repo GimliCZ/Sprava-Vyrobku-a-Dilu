@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using AutoMapper;
 using PropertyChanged;
+using SpravaVyrobkuaDilu.Interfaces;
 using SpravaVyrobkuaDilu.Database.Models;
-using SpravaVyrobkuaDilu.Services;
 
 namespace SpravaVyrobkuaDilu.Models
 {
