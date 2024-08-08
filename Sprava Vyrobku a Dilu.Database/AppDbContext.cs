@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Sprava_Vyrobku_a_Dilu.Database.Models;
+using SpravaVyrobkuaDilu.Database.Models;
 
-namespace Sprava_Vyrobku_a_Dilu.Database
+namespace SpravaVyrobkuaDilu.Database
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<DilModel> Dily {  get; set; }
-        public DbSet<VyrobekModel> Vyrobky {  get; set; }
+        public DbSet<DilModel> Dily { get; set; }
+        public DbSet<VyrobekModel> Vyrobky { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

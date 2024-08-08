@@ -1,16 +1,13 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-using AutoMapper;
+﻿using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sprava_Vyrobku_a_Dilu.Database;
-using Sprava_Vyrobku_a_Dilu.Models;
-using Sprava_Vyrobku_a_Dilu.Services;
+using SpravaVyrobkuaDilu.Database;
+using SpravaVyrobkuaDilu.Models;
+using SpravaVyrobkuaDilu.Services;
 
-namespace Sprava_Vyrobku_a_Dilu
+namespace SpravaVyrobkuaDilu
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -32,7 +29,7 @@ namespace Sprava_Vyrobku_a_Dilu
 
                     services.AddDbContextFactory<AppDbContext>(options =>
                     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-                    services.AddSingleton<IDbService,DbService>();
+                    services.AddSingleton<IDbService, DbService>();
                     services.AddSingleton<ObservableDataProvider>();
                     services.AddAutoMapper(typeof(MappingProfile));
                     services.AddTransient<PridatDilWindow>();
@@ -59,7 +56,7 @@ namespace Sprava_Vyrobku_a_Dilu
                 base.OnStartup(e);
                 await AppHost.WaitForShutdownAsync();
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show("Exception occured on Startup" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
             }

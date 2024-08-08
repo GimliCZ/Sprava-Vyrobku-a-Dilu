@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using AutoMapper;
 using PropertyChanged;
-using Sprava_Vyrobku_a_Dilu.Database.Models;
-using Sprava_Vyrobku_a_Dilu.Services;
+using SpravaVyrobkuaDilu.Database.Models;
+using SpravaVyrobkuaDilu.Services;
 
-namespace Sprava_Vyrobku_a_Dilu.Models
+namespace SpravaVyrobkuaDilu.Models
 {
     [AddINotifyPropertyChangedInterface]
     public class ObservableDataProvider
@@ -37,7 +31,7 @@ namespace Sprava_Vyrobku_a_Dilu.Models
             return Vyrobky.Any(v => v.Nazev.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
         //TODO: Předělat
-        public async Task<bool> AddVyrobekAndDily(VyrobekModel vyr,IEnumerable<DilModel> dilList )
+        public async Task<bool> AddVyrobekAndDily(VyrobekModel vyr, IEnumerable<DilModel> dilList)
         {
             if (await _dbService.AddVyrobekWithDilyAsync(vyr, dilList))
             {

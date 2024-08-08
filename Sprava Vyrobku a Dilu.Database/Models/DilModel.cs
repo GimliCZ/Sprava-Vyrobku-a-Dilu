@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sprava_Vyrobku_a_Dilu.Database.Models
+namespace SpravaVyrobkuaDilu.Database.Models
 {
     public class DilModel
     {

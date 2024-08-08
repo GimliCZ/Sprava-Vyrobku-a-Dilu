@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sprava_Vyrobku_a_Dilu.Database.Models
+namespace SpravaVyrobkuaDilu.Database.Models
 {
     public class VyrobekModel
     {
@@ -16,7 +16,7 @@ namespace Sprava_Vyrobku_a_Dilu.Database.Models
         public string? Poznamka { get; set; }
         public DateTime Zalozeno { get; set; } = DateTime.Now;
         public DateTime? Upraveno { get; set; }
-        public ICollection<DilModel> Dily {get;} = new List<DilModel>();
+        public ICollection<DilModel> Dily { get; } = new List<DilModel>();
 
         public VyrobekModel(string nazev, decimal cena)
         {

@@ -1,21 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using PropertyChanged;
-using Sprava_Vyrobku_a_Dilu.Core;
-using Sprava_Vyrobku_a_Dilu.Database.Models;
-using Sprava_Vyrobku_a_Dilu.Models;
-using Sprava_Vyrobku_a_Dilu.Services;
+using SpravaVyrobkuaDilu.Core;
+using SpravaVyrobkuaDilu.Database.Models;
+using SpravaVyrobkuaDilu.Models;
+using SpravaVyrobkuaDilu.Services;
 
-namespace Sprava_Vyrobku_a_Dilu
+namespace SpravaVyrobkuaDilu
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -253,11 +247,11 @@ namespace Sprava_Vyrobku_a_Dilu
 
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            try 
-            { 
-               await ObservableDataModel.Refresh();
+            try
+            {
+                await ObservableDataModel.Refresh();
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show("Exception occured on Refresh" + ex.Message + ex.StackTrace, "Exception Sample", MessageBoxButton.OK, MessageBoxImage.Error);
             }

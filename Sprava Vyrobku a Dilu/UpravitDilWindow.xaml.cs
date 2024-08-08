@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Sprava_Vyrobku_a_Dilu.Core;
-using Sprava_Vyrobku_a_Dilu.Database.Models;
-using Sprava_Vyrobku_a_Dilu.Models;
+using SpravaVyrobkuaDilu.Core;
+using SpravaVyrobkuaDilu.Database.Models;
+using SpravaVyrobkuaDilu.Models;
 
-namespace Sprava_Vyrobku_a_Dilu
+namespace SpravaVyrobkuaDilu
 {
     /// <summary>
     /// Interakční logika pro UpravitDil.xaml
@@ -29,7 +19,7 @@ namespace Sprava_Vyrobku_a_Dilu
         {
             _observableDataModel = observableDataProvider;
             InitializeComponent();
-            
+
         }
 
         public int EditedVyrobekId = 0;

@@ -1,7 +1,6 @@
-﻿using Sprava_Vyrobku_a_Dilu.Database.Models;
-using Sprava_Vyrobku_a_Dilu.Models;
+﻿using SpravaVyrobkuaDilu.Database.Models;
 
-namespace Sprava_Vyrobku_a_Dilu.Services
+namespace SpravaVyrobkuaDilu.Services
 {
     public interface IDbService
     {

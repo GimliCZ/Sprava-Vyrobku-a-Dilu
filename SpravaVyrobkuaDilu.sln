@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sprava Vyrobku a Dilu", "Sprava Vyrobku a Dilu\Sprava Vyrobku a Dilu.csproj", "{5149D29C-C724-47A0-87C2-DABDA9B129CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpravaVyrobkuaDilu", "Sprava Vyrobku a Dilu\SpravaVyrobkuaDilu.csproj", "{5149D29C-C724-47A0-87C2-DABDA9B129CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprava Vyrobku a Dilu.Database", "Sprava Vyrobku a Dilu.Database\Sprava Vyrobku a Dilu.Database.csproj", "{F61E55B9-DEB1-456F-BE8B-D0174C0DB906}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpravaVyrobkuaDilu.Database", "Sprava Vyrobku a Dilu.Database\SpravaVyrobkuaDilu.Database.csproj", "{F61E55B9-DEB1-456F-BE8B-D0174C0DB906}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

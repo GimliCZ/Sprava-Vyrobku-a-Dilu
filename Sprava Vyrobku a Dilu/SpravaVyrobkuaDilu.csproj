@@ -89,7 +89,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sprava Vyrobku a Dilu.Database\Sprava Vyrobku a Dilu.Database.csproj" />
+    <ProjectReference Include="..\Sprava Vyrobku a Dilu.Database\SpravaVyrobkuaDilu.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>

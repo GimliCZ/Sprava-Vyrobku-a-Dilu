@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PropertyChanged;
-using Sprava_Vyrobku_a_Dilu.Database.Models;
+﻿using PropertyChanged;
+using SpravaVyrobkuaDilu.Database.Models;
 
-namespace Sprava_Vyrobku_a_Dilu.Models
+namespace SpravaVyrobkuaDilu.Models
 {
     [AddINotifyPropertyChangedInterface]
     public class VyrobekViewableModel
@@ -20,6 +14,6 @@ namespace Sprava_Vyrobku_a_Dilu.Models
         public DateTime Zalozeno { get; set; }
         public DateTime? Upraveno { get; set; }
         public int CountOfDily => Dily.Count;
-        public List<DilModel> Dily { get; set; } = new List<DilModel> ();
+        public List<DilModel> Dily { get; set; } = new List<DilModel>();
     }
 }

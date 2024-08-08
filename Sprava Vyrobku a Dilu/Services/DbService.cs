@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Sprava_Vyrobku_a_Dilu.Database;
-using Sprava_Vyrobku_a_Dilu.Database.Models;
+using SpravaVyrobkuaDilu.Database;
+using SpravaVyrobkuaDilu.Database.Models;
 
-namespace Sprava_Vyrobku_a_Dilu.Services
+namespace SpravaVyrobkuaDilu.Services
 {
     public class DbService : IDbService
     {

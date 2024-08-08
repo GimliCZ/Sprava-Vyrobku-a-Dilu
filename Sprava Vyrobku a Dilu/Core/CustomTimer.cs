@@ -1,4 +1,4 @@
-﻿namespace Sprava_Vyrobku_a_Dilu.Core;
+﻿namespace SpravaVyrobkuaDilu.Core;
 
 public class CustomTimer
 {
